@@ -16,16 +16,25 @@ class AuthenticateService implements IAuthenticateService {
   @override
   Future<String> registerUser(UserRegisterDto user) async {
     try {
-      final response = await http.post((Uri.parse("$baseUrl/auth/register")), body: {
-        "name": user.name,
-        "email": user.email,
-        "password": user.password,
-      }, headers: {
-        'Content-Type': 'application/json'
-      });
+      final response = await http.post(
+        Uri.parse("$baseUrl/auth/register"),
+        body: json.encode({
+          "name": user.name,
+          "email": user.email,
+          "password": user.password,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode != 200) {
+        final decodedJson = json.decode(response.body);
+        throw Exception(decodedJson["message"]);
+      }
 
       final decodedJson = json.decode(response.body);
-      return decodedJson['message'];
+      return decodedJson["message"].toString();
     } on Exception catch (e) {
       rethrow;
     }
@@ -40,12 +49,12 @@ class AuthenticateService implements IAuthenticateService {
   @override
   Future<bool> login(UserLoginDto user) async {
     try {
-      final response = await http.post((Uri.parse("$baseUrl/auth/login")), body: {
-        "email": user.email,
-        "password": user.password,
-      }, headers: {
-        'Content-Type': 'application/json'
-      });
+      final response = await http.post(Uri.parse("$baseUrl/auth/login"),
+          body: json.encode({
+            "email": user.email,
+            "password": user.password,
+          }),
+          headers: {'Content-Type': 'application/json'});
 
       final decodedJson = json.decode(response.body);
       final token = decodedJson['access_token'];

@@ -6,6 +6,12 @@ class RegisterOpenLoadingState extends RegisterState {}
 
 class RegisterCloseLoadingState extends RegisterState {}
 
+class RegisterNomeEhObrigatorioState extends RegisterState {}
+
+class RegisterEmailEhObrigatorioState extends RegisterState {}
+
+class RegisterSenhaEhObrigatorioState extends RegisterState {}
+
 class RegisterFailureState extends RegisterState {
   final String message;
 

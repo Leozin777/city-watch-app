@@ -13,6 +13,19 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   RegisterBloc() : super(RegisterInitialState()) {
     on<RegisterButtonPressedEvent>((event, emmit) async {
       emmit(RegisterOpenLoadingState());
+      if (event.name.isEmpty || event.email.isEmpty || event.password.isEmpty) {
+        emmit(RegisterCloseLoadingState());
+        if (event.name.isEmpty) {
+          emmit(RegisterNomeEhObrigatorioState());
+        }
+        if (event.email.isEmpty) {
+          emmit(RegisterEmailEhObrigatorioState());
+        }
+        if (event.password.isEmpty) {
+          emmit(RegisterSenhaEhObrigatorioState());
+        }
+        return;
+      }
       try {
         final response = await _authService.registerUser(UserRegisterDto(name: event.name, email: event.email, password: event.password));
         emmit(RegisterCloseLoadingState());

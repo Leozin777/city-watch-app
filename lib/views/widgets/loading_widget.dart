@@ -1,16 +1,28 @@
 import 'package:flutter/material.dart';
 
 class LoadingWidget extends StatelessWidget {
-  const LoadingWidget({super.key});
+  final String? textoDoLoading;
+
+  const LoadingWidget({super.key, this.textoDoLoading});
 
   @override
   Widget build(BuildContext context) {
-    return const Dialog(
-      child: Row(
-        children: [
-          CircularProgressIndicator(),
-          Text("Carregando..."),
-        ],
+    return Dialog(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircularProgressIndicator(),
+            Padding(
+              padding: EdgeInsets.all(10),
+              child: Text(
+                textoDoLoading ?? "Carregando...",
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
