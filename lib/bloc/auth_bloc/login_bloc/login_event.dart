@@ -6,5 +6,5 @@ class LoginButtonPressedEvent extends LoginEvent {
   final String email;
   final String senha;
 
-  LoginButtonPressedEvent(this.email, this.senha);
+  LoginButtonPressedEvent({required this.email, required this.senha});
 }

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+import 'auth_pages/login_page.dart';
 import 'auth_pages/register_page.dart';
 
 class IntroductionPage extends StatelessWidget {
@@ -45,7 +46,9 @@ class IntroductionPage extends StatelessWidget {
                   children: [
                     Expanded(
                         child: FilledButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushNamed(context, LoginPage.route);
+                      },
                       child: const Text("Login"),
                       style: ButtonStyle(
                         shape: MaterialStateProperty.all<RoundedRectangleBorder>(

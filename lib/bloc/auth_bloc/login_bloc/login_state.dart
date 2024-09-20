@@ -6,14 +6,15 @@ class LoginOpenLoadingState extends LoginState {}
 
 class LoginCloseLoadingState extends LoginState {}
 
-class LoginErrorState extends LoginState {
+class LoginEmailEhObrigatorioState extends LoginState {}
+
+class LoginSenhaEhObrigatorioState extends LoginState {}
+
+class LoginFailureState extends LoginState {
   final String message;
 
-  LoginErrorState(this.message);
+  LoginFailureState({required this.message});
 }
 
 class LoginSuccessState extends LoginState {
-  final String token;
-
-  LoginSuccessState(this.token);
 }

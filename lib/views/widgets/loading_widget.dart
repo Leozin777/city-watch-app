@@ -9,19 +9,19 @@ class LoadingWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dialog(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CircularProgressIndicator(),
+            CircularProgressIndicator(),
             Padding(
-              padding: EdgeInsets.all(10),
               child: Text(
                 textoDoLoading ?? "Carregando...",
               ),
+              padding: EdgeInsets.all(10),
             )
           ],
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
         ),
       ),
     );
