@@ -7,6 +7,7 @@ import 'package:city_watch/views/pages/home_page.dart';
 import 'package:city_watch/views/pages/introduction_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_config/flutter_config.dart';
 import 'package:get_it/get_it.dart';
 import 'bloc/auth_bloc/register_bloc/register_bloc.dart';
 import 'data/models/interface/ilocal_storage_helper.dart';
@@ -15,6 +16,7 @@ import 'data/service/authenticate_service.dart';
 void main() async {
   setupInjecaoDeDependencia();
   WidgetsFlutterBinding.ensureInitialized();
+  await FlutterConfig.loadEnvVariables();
   final bool isAuthenticated = await loginValidation();
 
   runApp(MyApp(
