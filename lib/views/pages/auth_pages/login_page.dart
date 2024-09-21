@@ -86,7 +86,14 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 20),
                       TextFieldWidget(
-                          labelText: "Email", errorText: _emailError ? "Email é obrigatório" : null, controller: _emailController),
+                          labelText: "Email",
+                          onChanged: (value) {
+                            setState(() {
+                              _emailError = false;
+                            });
+                          },
+                          errorText: _emailError ? "Email é obrigatório" : null,
+                          controller: _emailController),
                       const SizedBox(height: 20),
                       TextField(
                         onChanged: (value) {
