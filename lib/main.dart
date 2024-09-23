@@ -1,5 +1,8 @@
 import 'package:city_watch/bloc/auth_bloc/login_bloc/login_bloc.dart';
+import 'package:city_watch/bloc/home_bloc/home_bloc.dart';
 import 'package:city_watch/data/models/interface/iauthenticate_service.dart';
+import 'package:city_watch/data/models/interface/ihome_service.dart';
+import 'package:city_watch/data/service/home_service.dart';
 import 'package:city_watch/helpers/local_storage_helper.dart';
 import 'package:city_watch/views/pages/auth_pages/login_page.dart';
 import 'package:city_watch/views/pages/auth_pages/register_page.dart';
@@ -29,6 +32,7 @@ final GetIt injecaoDeDepencia = GetIt.instance;
 setupInjecaoDeDependencia() {
   injecaoDeDepencia.registerSingleton<ILocalStorageHelper>(LocalStorageHelper());
   injecaoDeDepencia.registerSingleton<IAuthenticateService>(AuthenticateService());
+  injecaoDeDepencia.registerSingleton<IHomeService>(HomeService());
 }
 
 Future<bool> loginValidation() async {
@@ -53,13 +57,13 @@ class MyApp extends StatelessWidget {
               create: (context) => LoginBloc(),
               child: const LoginPage(),
             ),
-        HomePage.route: (context) => const HomePage(),
+        HomePage.route: (context) => BlocProvider(create: (context) => HomeBloc(), child: const HomePage()),
         RegisterPage.route: (context) => BlocProvider(
               create: (context) => RegisterBloc(),
               child: const RegisterPage(),
             ),
       },
-      home: isAutheticated ? const HomePage() : const IntroductionPage(),
+      home: isAutheticated ? BlocProvider(create: (context) => HomeBloc(), child: const HomePage()) : const IntroductionPage(),
     );
   }
 }
