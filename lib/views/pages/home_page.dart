@@ -19,6 +19,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late GoogleMapController _mapController;
   late LatLng _initialPosition = LatLng(latitude, longitude);
+  bool myLocationButtonEnabled = false;
+  bool myLocationEnabled = false;
   double latitude = 0;
   double longitude = 0;
   List<Marker> markers = [];
@@ -46,6 +48,8 @@ class _HomePageState extends State<HomePage> {
             latitude = state.latitude;
             longitude = state.longitude;
             _mapController.animateCamera(CameraUpdate.newLatLng(LatLng(latitude, longitude)));
+            myLocationButtonEnabled = true;
+            myLocationEnabled = true;
           });
         }
 
@@ -78,8 +82,8 @@ class _HomePageState extends State<HomePage> {
               zoomControlsEnabled: true,
               mapType: MapType.normal,
               markers: markers.toSet(),
-              myLocationButtonEnabled: true,
-              myLocationEnabled: true,
+              myLocationButtonEnabled: myLocationButtonEnabled,
+              myLocationEnabled: myLocationEnabled,
             ),
           );
         },

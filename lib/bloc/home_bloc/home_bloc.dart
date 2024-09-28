@@ -26,13 +26,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
         Position position = await Geolocator.getCurrentPosition();
         emit(HomeLocalizacaoDoUsuarioSuccessState(latitude: position.latitude, longitude: position.longitude));
-        emit(HomeOpenLoadingState());
         try {
           final problemas = await _homeService.getProblemas();
           emit(HomeProblemasSuccessState(problemas: problemas));
-          emit(HomeCloseLoadingState());
         } on Exception catch (e) {
-          emit(HomeCloseLoadingState());
           emit(HomeFailureState());
         }
       }
