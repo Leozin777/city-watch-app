@@ -21,10 +21,9 @@ Após configurar o ambiente Flutter, clone este repositório em sua máquina loc
 ```bash
 git clone https://github.com/Leozin777/city-watch-app
 
-3. Instale as dependências:
-   ```
-   flutter pub get
-   ```
+```
+
+### 3. Instale as dependências:
 
 ## Como Usar
 
