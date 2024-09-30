@@ -1,3 +1,5 @@
+import '../enums/e_tipo_problema.dart';
+
 class ProblemaDto {
   final int id;
   final String nome;
@@ -6,6 +8,10 @@ class ProblemaDto {
   final String? foto;
   final double latitude;
   final double longitude;
+  final ETipoProblema tipoProblema;
+  final int likes;
+  final int deslikes;
+  final String nomeDoUsuario;
 
   ProblemaDto(
       {required this.id,
@@ -14,7 +20,11 @@ class ProblemaDto {
       this.descricao,
       this.foto,
       required this.latitude,
-      required this.longitude});
+      required this.longitude,
+      required this.tipoProblema,
+      required this.likes,
+      required this.deslikes,
+      required this.nomeDoUsuario});
 
   factory ProblemaDto.fromJson(Map<String, dynamic> json) {
     return ProblemaDto(
@@ -25,6 +35,10 @@ class ProblemaDto {
       foto: json['foto'],
       latitude: json['latitude'],
       longitude: json['longitude'],
+      tipoProblema: ETipoProblema.values[json['tipoProblema']],
+      likes: json['likes'],
+      deslikes: json['deslikes'],
+      nomeDoUsuario: json['nomeDoUsuario'],
     );
   }
 }

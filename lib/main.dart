@@ -8,6 +8,7 @@ import 'package:city_watch/views/pages/auth_pages/login_page.dart';
 import 'package:city_watch/views/pages/auth_pages/register_page.dart';
 import 'package:city_watch/views/pages/home_page.dart';
 import 'package:city_watch/views/pages/introduction_page.dart';
+import 'package:city_watch/views/widgets/tab_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_config/flutter_config.dart';
@@ -49,7 +50,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green[800] ?? Colors.green, secondary: Colors.green[500] ?? Colors.green),
         useMaterial3: true,
       ),
       routes: {
@@ -63,7 +64,7 @@ class MyApp extends StatelessWidget {
               child: const RegisterPage(),
             ),
       },
-      home: isAutheticated ? BlocProvider(create: (context) => HomeBloc(), child: const HomePage()) : const IntroductionPage(),
+      home: isAutheticated ? TabBarWidget() : const IntroductionPage(),
     );
   }
 }

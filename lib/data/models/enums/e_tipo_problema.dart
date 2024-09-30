@@ -1,0 +1,1 @@
+enum ETipoProblema { FaltaDeEnergia, SaneamentoBasico, Infraestrutura, AreaDeRisco, Outros }

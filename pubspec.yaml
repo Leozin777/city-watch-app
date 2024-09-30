@@ -66,7 +66,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - assets/img/city_watch_logo.png
+    - assets/icons/danger.png
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
