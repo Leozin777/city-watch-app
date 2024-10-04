@@ -1,4 +1,4 @@
-import '../../data/models/dtos/problema_dto.dart';
+import '../../data/models/dtos/problema_response_dto.dart';
 
 abstract class HomeState {}
 
@@ -22,7 +22,9 @@ class HomeLocalizacaoDoUsuarioSuccessState extends HomeState {
 class HomeLocationServiceDisabledState extends HomeState {}
 
 class HomeProblemasSuccessState extends HomeState {
-  List<ProblemaDto> problemas;
+  List<ProblemaResponseDto> problemas;
 
   HomeProblemasSuccessState({required this.problemas});
 }
+
+class HomeCriarProblemaSuccessState extends HomeState {}

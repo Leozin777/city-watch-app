@@ -34,5 +34,29 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         }
       }
     });
+
+    on<HomeCriarProblemaEvent>((event, emit) async {
+      emit(HomeOpenLoadingState());
+      try {
+        await _homeService.criarProblema(event.problema);
+        emit(HomeCloseLoadingState());
+        emit(HomeCriarProblemaSuccessState());
+      } on Exception catch (e) {
+        emit(HomeCloseLoadingState());
+        emit(HomeFailureState());
+      }
+    });
+
+    on<HomeAtualizaTela>((event, emit) async {
+      emit(HomeOpenLoadingState());
+      try {
+        final problemas = await _homeService.getProblemas();
+        emit(HomeCloseLoadingState());
+        emit(HomeProblemasSuccessState(problemas: problemas));
+      } on Exception catch (e) {
+        emit(HomeCloseLoadingState());
+        emit(HomeFailureState());
+      }
+    });
   }
 }

@@ -1,4 +1,5 @@
-import 'package:city_watch/data/models/dtos/problema_dto.dart';
+import 'package:city_watch/data/models/dtos/problema_request_dto.dart';
+import 'package:city_watch/data/models/dtos/problema_response_dto.dart';
 import 'package:city_watch/data/models/interface/ihome_service.dart';
 import 'package:city_watch/data/service/base_service.dart';
 
@@ -6,9 +7,9 @@ import '../models/enums/e_tipo_problema.dart';
 
 class HomeService extends BaseService implements IHomeService {
   @override
-  Future<List<ProblemaDto>> getProblemas() {
-    final List<ProblemaDto> _problems = [
-      ProblemaDto(
+  Future<List<ProblemaResponseDto>> getProblemas() {
+    final List<ProblemaResponseDto> _problems = [
+      ProblemaResponseDto(
         id: 1,
         nome: 'Problema: Energia',
         endereco: 'Torres - RS',
@@ -21,7 +22,7 @@ class HomeService extends BaseService implements IHomeService {
         deslikes: 2,
         nomeDoUsuario: 'João',
       ),
-      ProblemaDto(
+      ProblemaResponseDto(
         id: 2,
         nome: 'Problema: Buraco na rua paizaum',
         endereco: 'Torres - RS',
@@ -34,7 +35,7 @@ class HomeService extends BaseService implements IHomeService {
         deslikes: 2,
         nomeDoUsuario: 'João',
       ),
-      ProblemaDto(
+      ProblemaResponseDto(
         id: 1,
         nome: 'Problema: Energia',
         endereco: 'Torres - RS',
@@ -50,5 +51,10 @@ class HomeService extends BaseService implements IHomeService {
     ];
 
     return Future.value(_problems);
+  }
+
+  @override
+  criarProblema(ProblemaRequestDto problema) async {
+    await Future.delayed(Duration(seconds: 5));
   }
 }

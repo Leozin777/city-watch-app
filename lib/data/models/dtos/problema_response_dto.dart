@@ -1,6 +1,6 @@
 import '../enums/e_tipo_problema.dart';
 
-class ProblemaDto {
+class ProblemaResponseDto {
   final int id;
   final String nome;
   final String endereco;
@@ -13,7 +13,7 @@ class ProblemaDto {
   final int deslikes;
   final String nomeDoUsuario;
 
-  ProblemaDto(
+  ProblemaResponseDto(
       {required this.id,
       required this.nome,
       required this.endereco,
@@ -26,8 +26,8 @@ class ProblemaDto {
       required this.deslikes,
       required this.nomeDoUsuario});
 
-  factory ProblemaDto.fromJson(Map<String, dynamic> json) {
-    return ProblemaDto(
+  factory ProblemaResponseDto.fromJson(Map<String, dynamic> json) {
+    return ProblemaResponseDto(
       id: json['id'],
       nome: json['nome'],
       endereco: json['endereco'],
