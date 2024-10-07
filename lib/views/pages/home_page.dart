@@ -13,6 +13,8 @@ import '../../bloc/home_bloc/home_event.dart';
 import '../../bloc/home_bloc/home_state.dart';
 import '../../data/models/tipo_problema_dto.dart';
 import '../widgets/bottom_sheet_generico.dart';
+import 'dart:math' as math;
+
 
 class HomePage extends StatefulWidget {
   static String route = '/home';
@@ -35,6 +37,7 @@ class _HomePageState extends State<HomePage> {
   late CameraController _cameraController;
   late TextEditingController _nomeDoProblemaController;
   late TextEditingController _descricaoDoProblemaController;
+  Set<Circle> _rangeDoUsuario = {};
   List<TipoProblemaDto> tiposDeProblema = [
     TipoProblemaDto(tipoEnum: ETipoProblema.FaltaDeEnergia, nome: "Falta de energia"),
     TipoProblemaDto(tipoEnum: ETipoProblema.SaneamentoBasico, nome: "Saneamento básico"),
@@ -102,6 +105,26 @@ class _HomePageState extends State<HomePage> {
     return 'Endereço não encontrado';
   }
 
+  bool _clicouNoCirculo(LatLng point, LatLng center, double radius) {
+    final double distance = _calculaDistancia(point, center);
+    return distance <= radius;
+  }
+
+  double _calculaDistancia(LatLng point1, LatLng point2) {
+    const double raioDaTerraEmMetros = 6371000;
+    final double dLat = _grauParaRadianos(point2.latitude - point1.latitude);
+    final double dLng = _grauParaRadianos(point2.longitude - point1.longitude);
+    final double a = math.sin(dLat / 2) * math.sin(dLat / 2) +
+        math.cos(_grauParaRadianos(point1.latitude)) * math.cos(_grauParaRadianos(point2.latitude)) *
+            math.sin(dLng / 2) * math.sin(dLng / 2);
+    final double c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
+    return raioDaTerraEmMetros * c;
+  }
+
+  double _grauParaRadianos(double degrees) {
+    return degrees * math.pi / 180;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -122,6 +145,17 @@ class _HomePageState extends State<HomePage> {
               _mapController.animateCamera(CameraUpdate.newLatLng(LatLng(latitude, longitude)));
               myLocationButtonEnabled = true;
               myLocationEnabled = true;
+
+              _rangeDoUsuario = {
+                Circle(
+                  circleId: CircleId('userLocationCircle'),
+                  center: LatLng(latitude, longitude),
+                  radius: 70, // Radius in meters
+                  fillColor: Colors.green[800]!.withOpacity(0.1),
+                  strokeColor: Colors.blue,
+                  strokeWidth: 1,
+                ),
+              };
             });
           }
 
@@ -234,6 +268,9 @@ class _HomePageState extends State<HomePage> {
                 mapType: MapType.normal,
                 markers: markers.toSet(),
                 onTap: (value) async {
+                  if (!_clicouNoCirculo(value, LatLng(latitude, longitude), 70)) {
+                    return;
+                  }
                   TipoProblemaDto? _tipoDeProblemaSelecionado;
                   final endereco = await retornaLocalizacaoDoUsuario(value.latitude, value.longitude);
                   String? caminhoDaFoto;
@@ -316,6 +353,7 @@ class _HomePageState extends State<HomePage> {
                 },
                 myLocationButtonEnabled: myLocationButtonEnabled,
                 myLocationEnabled: myLocationEnabled,
+                circles: _rangeDoUsuario,
               ),
             );
           },
