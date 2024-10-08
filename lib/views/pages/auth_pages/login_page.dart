@@ -1,5 +1,6 @@
 import 'package:city_watch/views/pages/home_page.dart';
 import 'package:city_watch/views/widgets/loading_widget.dart';
+import 'package:city_watch/views/widgets/tab_bar_widget.dart';
 import 'package:city_watch/views/widgets/text_field_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -58,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
             }
 
             if (state is LoginSuccessState) {
-              Navigator.of(context).pushReplacementNamed(HomePage.route);
+              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => TabBarWidget()));
             }
 
             if (state is LoginEmailEhObrigatorioState) {
