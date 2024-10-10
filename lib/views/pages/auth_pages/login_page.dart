@@ -1,10 +1,9 @@
-import 'package:city_watch/views/pages/home_page.dart';
+import 'package:city_watch/views/pages/auth_pages/register_page.dart';
 import 'package:city_watch/views/widgets/loading_widget.dart';
 import 'package:city_watch/views/widgets/tab_bar_widget.dart';
-import 'package:city_watch/views/widgets/text_field_widget.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../bloc/auth_bloc/login_bloc/login_bloc.dart';
 import '../../../bloc/auth_bloc/login_bloc/login_event.dart';
 import '../../../bloc/auth_bloc/login_bloc/login_state.dart';
@@ -40,61 +39,106 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  InputDecoration _inputDecoration(String labelText, String? errorText) {
+    return InputDecoration(
+      labelText: labelText,
+      errorText: errorText,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(5.0),
+        borderSide: const BorderSide(color: Colors.white),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(5.0),
+        borderSide: const BorderSide(color: Colors.white),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(5.0),
+        borderSide: const BorderSide(color: Colors.white),
+      ),
+      labelStyle: const TextStyle(color: Colors.white),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(),
-        body: BlocListener<LoginBloc, LoginState>(
-          listener: (context, state) {
-            if (state is LoginOpenLoadingState) {
-              showDialog(context: context, builder: (_) => const LoadingWidget());
-            }
+      body: BlocListener<LoginBloc, LoginState>(
+        listener: (context, state) {
+          if (state is LoginOpenLoadingState) {
+            showDialog(context: context, builder: (_) => const LoadingWidget());
+          }
 
-            if (state is LoginCloseLoadingState) {
-              Navigator.of(context).pop();
-            }
+          if (state is LoginCloseLoadingState) {
+            Navigator.of(context).pop();
+          }
 
-            if (state is LoginFailureState) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
-            }
+          if (state is LoginFailureState) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
+          }
 
-            if (state is LoginSuccessState) {
-              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => TabBarWidget()));
-            }
+          if (state is LoginSuccessState) {
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => TabBarWidget()));
+          }
 
-            if (state is LoginEmailEhObrigatorioState) {
-              setState(() {
-                _emailError = true;
-              });
-            }
+          if (state is LoginEmailEhObrigatorioState) {
+            setState(() {
+              _emailError = true;
+            });
+          }
 
-            if (state is LoginSenhaEhObrigatorioState) {
-              setState(() {
-                _senhaError = true;
-              });
-            }
-          },
-          child: BlocBuilder<LoginBloc, LoginState>(
-            builder: (context, state) {
-              return SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
+          if (state is LoginSenhaEhObrigatorioState) {
+            setState(() {
+              _senhaError = true;
+            });
+          }
+        },
+        child: BlocBuilder<LoginBloc, LoginState>(
+          builder: (context, state) {
+            return Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    const Color(0xFF16423C),
+                    const Color(0xFF6A9C89),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(20.0),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Ola, bem vindo de volta!",
-                        style: Theme.of(context).textTheme.titleLarge,
+                        "Sign Up",
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                       const SizedBox(height: 20),
-                      TextFieldWidget(
-                          labelText: "Email",
-                          onChanged: (value) {
-                            setState(() {
-                              _emailError = false;
-                            });
-                          },
-                          errorText: _emailError ? "Email é obrigatório" : null,
-                          controller: _emailController),
+                      Text(
+                        "Olá, bem-vindo de volta!",
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          color: Colors.white70,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 30),
+                      TextField(
+                        onChanged: (value) {
+                          setState(() {
+                            _emailError = false;
+                          });
+                        },
+                        controller: _emailController,
+                        decoration: _inputDecoration("Email", _emailError ? "Email é obrigatório" : null),
+                        style: const TextStyle(color: Colors.white),
+                      ),
                       const SizedBox(height: 20),
                       TextField(
                         onChanged: (value) {
@@ -103,60 +147,68 @@ class _LoginPageState extends State<LoginPage> {
                           });
                         },
                         controller: _senhaController,
-                        decoration: InputDecoration(
-                          labelText: "Senha",
-                          errorText: _senhaError ? "Senha é obrigatório" : null,
-                          border: OutlineInputBorder(),
-                          suffixIcon: _obscureText
-                              ? IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      _obscureText = !_obscureText;
-                                    });
-                                  },
-                                  icon: const Icon(Icons.visibility_off),
-                                )
-                              : IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      _obscureText = !_obscureText;
-                                    });
-                                  },
-                                  icon: const Icon(Icons.visibility),
-                                ),
-                        ),
+                        decoration: _inputDecoration("Senha", _senhaError ? "Senha é obrigatória" : null),
                         obscureText: _obscureText,
+                        style: const TextStyle(color: Colors.white),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 30),
                       Row(
                         children: [
                           Expanded(
-                              child: FilledButton(
-                            onPressed: () {
-                              BlocProvider.of<LoginBloc>(context).add(
-                                LoginButtonPressedEvent(
-                                  email: _emailController.text,
-                                  senha: _senhaController.text,
+                            child: FilledButton(
+                              onPressed: () {
+                                BlocProvider.of<LoginBloc>(context).add(
+                                  LoginButtonPressedEvent(
+                                    email: _emailController.text,
+                                    senha: _senhaController.text,
+                                  ),
+                                );
+                              },
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(const Color(0xFF6A9C89)),
+                                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5.0),
+                                  ),
                                 ),
-                              );
-                            },
-                            child: Text('Login'),
-                            style: ButtonStyle(
-                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(3.0),
-                                ),
+                                padding: MaterialStateProperty.all(const EdgeInsets.symmetric(vertical: 16)),
+                              ),
+                              child: const Text(
+                                'LOGIN',
+                                style: TextStyle(fontSize: 20),
                               ),
                             ),
-                          )),
+                          ),
                         ],
+                      ),
+                      const SizedBox(height: 20),
+                      RichText(
+                        overflow: TextOverflow.ellipsis,
+                        text: TextSpan(
+                          text: "Não tem uma conta? ",
+                          style: DefaultTextStyle.of(context).style.copyWith(color: Colors.white70),
+                          children: [
+                            TextSpan(
+                              text: "Cadastre-se",
+                              style: const TextStyle(
+                                color: Colors.white,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  Navigator.of(context).pushNamed(RegisterPage.route);
+                                },
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
-              );
-            },
-          ),
-        ));
+              ),
+            );
+          },
+        ),
+      ),
+    );
   }
 }

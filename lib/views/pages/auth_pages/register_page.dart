@@ -45,10 +45,29 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
+  InputDecoration _inputDecoration(String labelText, String? errorText) {
+    return InputDecoration(
+      labelText: labelText,
+      errorText: errorText,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(5.0),
+        borderSide: const BorderSide(color: Colors.white),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(5.0),
+        borderSide: const BorderSide(color: Colors.white),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(5.0),
+        borderSide: const BorderSide(color: Colors.white),
+      ),
+      labelStyle: const TextStyle(color: Colors.white),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
       body: BlocListener<RegisterBloc, RegisterState>(
         listener: (context, state) {
           if (state is RegisterOpenLoadingState) {
@@ -74,7 +93,7 @@ class _RegisterPageState extends State<RegisterPage> {
               backgroundColor: Colors.green,
             );
 
-            Future.delayed(Duration(seconds: 2));
+            Future.delayed(const Duration(seconds: 2));
             Navigator.of(context).pushReplacementNamed(HomePage.route);
           }
 
@@ -98,115 +117,147 @@ class _RegisterPageState extends State<RegisterPage> {
         },
         child: BlocBuilder<RegisterBloc, RegisterState>(
           builder: (context, state) {
-            return SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  children: [
-                    Text(
-                      "Ola, registre-se para começar a usar o app",
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 20),
-                    TextFieldWidget(
-                      labelText: "Email",
-                      errorText: _emailError ? "Email é obrigatório" : null,
-                      controller: _emailController,
-                      onChanged: (value) {
-                        setState(() {
-                          _emailError = false;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    TextFieldWidget(
-                      labelText: "Nome",
-                      errorText: _nomeError ? "Nome é obrigatório" : null,
-                      controller: _nameController,
-                      onChanged: (value) {
-                        setState(() {
-                          _nomeError = false;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    TextField(
-                      onChanged: (value) {
-                        setState(() {
-                          _senhaError = false;
-                        });
-                      },
-                      controller: _passwordController,
-                      decoration: InputDecoration(
-                        labelText: "Senha",
-                        errorText: _senhaError ? "Senha é obrigatório" : null,
-                        border: OutlineInputBorder(),
-                        suffixIcon: _obscureText
-                            ? IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _obscureText = !_obscureText;
-                                  });
-                                },
-                                icon: const Icon(Icons.visibility_off),
-                              )
-                            : IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _obscureText = !_obscureText;
-                                  });
-                                },
-                                icon: const Icon(Icons.visibility),
-                              ),
+            return Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    const Color(0xFF16423C),
+                    const Color(0xFF6A9C89),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Cadastre-se",
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
-                      obscureText: _obscureText,
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Expanded(
-                            child: FilledButton(
-                          onPressed: () {
-                            BlocProvider.of<RegisterBloc>(context).add(
-                              RegisterButtonPressedEvent(
-                                name: _nameController.text,
-                                email: _emailController.text,
-                                password: _passwordController.text,
-                              ),
-                            );
-                          },
-                          child: Text('Registrar-se'),
-                          style: ButtonStyle(
-                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(3.0),
-                              ),
-                            ),
+                      const SizedBox(height: 20),
+                      Text(
+                        "Olá, registre-se para começar a usar o app",
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          color: Colors.white70,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 30),
+                      TextFieldWidget(
+                        labelText: "Email",
+                        errorText: _emailError ? "Email é obrigatório" : null,
+                        controller: _emailController,
+                        onChanged: (value) {
+                          setState(() {
+                            _emailError = false;
+                          });
+                        },
+                        decoration: _inputDecoration("Email", _emailError ? "Email é obrigatório" : null),
+                      ),
+                      const SizedBox(height: 20),
+                      TextFieldWidget(
+                        labelText: "Nome",
+                        errorText: _nomeError ? "Nome é obrigatório" : null,
+                        controller: _nameController,
+                        onChanged: (value) {
+                          setState(() {
+                            _nomeError = false;
+                          });
+                        },
+                        decoration: _inputDecoration("Nome", _nomeError ? "Nome é obrigatório" : null),
+                      ),
+                      const SizedBox(height: 20),
+                      TextField(
+                        onChanged: (value) {
+                          setState(() {
+                            _senhaError = false;
+                          });
+                        },
+                        controller: _passwordController,
+                        decoration: _inputDecoration("Senha", _senhaError ? "Senha é obrigatório" : null).copyWith(
+                          suffixIcon: _obscureText
+                              ? IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _obscureText = !_obscureText;
+                              });
+                            },
+                            icon: const Icon(Icons.visibility_off, color: Colors.white),
+                          )
+                              : IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _obscureText = !_obscureText;
+                              });
+                            },
+                            icon: const Icon(Icons.visibility, color: Colors.white),
                           ),
-                        )),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    RichText(
-                      overflow: TextOverflow.ellipsis,
-                      text: TextSpan(
-                        text: 'Ja possui uma conta? ',
-                        style: DefaultTextStyle.of(context).style,
+                        ),
+                        obscureText: _obscureText,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                      const SizedBox(height: 30),
+                      Row(
                         children: [
-                          TextSpan(
-                            text: 'Clique aqui ',
-                            style: const TextStyle(
-                              color: Colors.blue,
-                            ),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                Navigator.of(context).pushNamed(LoginPage.route);
+                          Expanded(
+                            child: FilledButton(
+                              onPressed: () {
+                                BlocProvider.of<RegisterBloc>(context).add(
+                                  RegisterButtonPressedEvent(
+                                    name: _nameController.text,
+                                    email: _emailController.text,
+                                    password: _passwordController.text,
+                                  ),
+                                );
                               },
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(const Color(0xFF6A9C89)),
+                                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5.0),
+                                  ),
+                                ),
+                                padding: MaterialStateProperty.all(const EdgeInsets.symmetric(vertical: 16)),
+                              ),
+                              child: const Text(
+                                'CADASTRAR',
+                                style: TextStyle(fontSize: 20),
+                              ),
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 20),
+                      RichText(
+                        overflow: TextOverflow.ellipsis,
+                        text: TextSpan(
+                          text: 'Já possui uma conta? ',
+                          style: DefaultTextStyle.of(context).style.copyWith(color: Colors.white70),
+                          children: [
+                            TextSpan(
+                              text: 'Clique aqui ',
+                              style: const TextStyle(
+                                color: Colors.white,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  Navigator.of(context).pushNamed(LoginPage.route);
+                                },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
