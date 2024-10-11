@@ -15,7 +15,6 @@ import '../../data/models/tipo_problema_dto.dart';
 import '../widgets/bottom_sheet_generico.dart';
 import 'dart:math' as math;
 
-
 class HomePage extends StatefulWidget {
   static String route = '/home';
 
@@ -281,24 +280,37 @@ class _HomePageState extends State<HomePage> {
                     builder: (_) => BottomSheetGenerico(
                       widgetBottomSheet: Column(
                         children: [
-                          const Center(
-                            child: Text("Cadastrar problema"),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Color(0xFF388E3C),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            padding: const EdgeInsets.all(8.0),
+                            child: const Center(
+                              child: Text(
+                                "Cadastrar problema",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
                           ),
                           const SizedBox(height: 20),
                           DropdownButtonFormField<TipoProblemaDto>(
                             value: _tipoDeProblemaSelecionado,
                             items: tiposDeProblema
                                 .map((TipoProblemaDto tipoDeProblema) => DropdownMenuItem<TipoProblemaDto>(
-                                      value: tipoDeProblema,
-                                      child: Text(tipoDeProblema.nome),
-                                    ))
+                              value: tipoDeProblema,
+                              child: Text(tipoDeProblema.nome),
+                            ))
                                 .toList(),
                             onChanged: (value) {
                               setState(() {
                                 _tipoDeProblemaSelecionado = value as TipoProblemaDto;
                               });
                             },
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: "Tipo de problema",
                             ),
                           ),
@@ -315,40 +327,69 @@ class _HomePageState extends State<HomePage> {
                           const SizedBox(height: 20),
                           Text(endereco),
                           const SizedBox(height: 20),
-                          FilledButton(
-                              onPressed: () async {
-                                caminhoDaFoto = await tirarFoto();
-                              },
-                              child: const Text("Adicione uma foto do problema")),
-                          Row(
-                            children: [
-                              FilledButton(onPressed: () {}, child: const Text("Voltar")),
-                              FilledButton(
-                                  onPressed: () {
-                                    _nomeDoProblemaController.clear();
-                                    _descricaoDoProblemaController.clear();
 
-                                    BlocProvider.of<HomeBloc>(context).add(
-                                      HomeCriarProblemaEvent(
-                                        problema: ProblemaRequestDto(
-                                            nome: _nomeDoProblemaController.text,
-                                            descricao: _descricaoDoProblemaController.text,
-                                            tipoDoProblema: _tipoDeProblemaSelecionado!.tipoEnum,
-                                            localizacao: endereco,
-                                            foto: caminhoDaFoto,
-                                            latitude: value.latitude,
-                                            longitude: value.longitude),
+                          FilledButton(
+                            onPressed: () async {
+                              caminhoDaFoto = await tirarFoto();
+                            },
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children:  [
+                                Text("Adicione uma foto do problema"),
+                                SizedBox(width: 8),
+                                Icon(Icons.camera_alt),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              FilledButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.arrow_back),
+                                    SizedBox(width: 8),
+                                    Text("Voltar"),
+                                  ],
+                                ),
+                              ),
+                              FilledButton(
+                                onPressed: () {
+                                  limpaControllesrs();
+                                  BlocProvider.of<HomeBloc>(context).add(
+                                    HomeCriarProblemaEvent(
+                                      problema: ProblemaRequestDto(
+                                        nome: _nomeDoProblemaController.text,
+                                        descricao: _descricaoDoProblemaController.text,
+                                        tipoDoProblema: _tipoDeProblemaSelecionado!.tipoEnum,
+                                        localizacao: endereco,
+                                        foto: caminhoDaFoto,
+                                        latitude: value.latitude,
+                                        longitude: value.longitude,
                                       ),
-                                    );
-                                  },
-                                  child: const Text("Cadastrar")),
+                                    ),
+                                  );
+                                },
+                                child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text("Cadastrar"),
+                                    SizedBox(width: 8),
+                                    Icon(Icons.check),
+                                  ],
+                                ),
+                              ),
                             ],
-                          )
+                          ),
                         ],
                       ),
                     ),
                   );
-
                   limpaControllesrs();
                 },
                 myLocationButtonEnabled: myLocationButtonEnabled,
