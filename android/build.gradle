@@ -1,3 +1,15 @@
+buildscript {
+    ext.kotlin_version = '1.9.0' // Define a versão do Kotlin que você quer usar
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        // Outras dependências de classe podem ir aqui
+    }
+}
+
 allprojects {
     repositories {
         google()

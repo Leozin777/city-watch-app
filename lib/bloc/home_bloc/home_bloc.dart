@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../../data/models/interface/ihome_service.dart';
+import '../../helpers/calcula_distancia.dart';
 import 'home_event.dart';
 import 'home_state.dart';
 
@@ -26,12 +27,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
         Position position = await Geolocator.getCurrentPosition();
         emit(HomeLocalizacaoDoUsuarioSuccessState(latitude: position.latitude, longitude: position.longitude));
-        try {
-          final problemas = await _homeService.getProblemas();
-          emit(HomeProblemasSuccessState(problemas: problemas));
-        } on Exception catch (e) {
-          emit(HomeFailureState());
-        }
       }
     });
 
@@ -53,6 +48,27 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         final problemas = await _homeService.getProblemas();
         emit(HomeCloseLoadingState());
         emit(HomeProblemasSuccessState(problemas: problemas));
+      } on Exception catch (e) {
+        emit(HomeCloseLoadingState());
+        emit(HomeFailureState());
+      }
+    });
+
+    on<HomeBuscarProblemasEvent>((event, emit) async {
+      emit(HomeOpenLoadingState());
+      try {
+        final problemas = await _homeService.getProblemas();
+        final problemasDentroDaDistancia = problemas.where((problema) {
+          final distance = CalculaDistancia.calculateDistanceEntreDoisPontos(
+            event.latitude,
+            event.longitude,
+            problema.latitude,
+            problema.longitude,
+          );
+          return distance <= 2;
+        }).toList();
+        emit(HomeCloseLoadingState());
+        emit(HomeProblemasSuccessState(problemas: problemasDentroDaDistancia));
       } on Exception catch (e) {
         emit(HomeCloseLoadingState());
         emit(HomeFailureState());
