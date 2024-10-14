@@ -2,6 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:city_watch/data/models/dtos/problema_request_dto.dart';
 import 'package:city_watch/data/models/dtos/problema_response_dto.dart';
 import 'package:city_watch/data/models/enums/e_tipo_problema.dart';
+import 'package:city_watch/helpers/calcula_distancia.dart';
 import 'package:city_watch/views/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,7 +15,6 @@ import '../../bloc/home_bloc/home_state.dart';
 import '../../data/models/tipo_problema_dto.dart';
 import '../widgets/bottom_sheet_generico.dart';
 import 'dart:math' as math;
-
 
 class HomePage extends StatefulWidget {
   static String route = '/home';
@@ -106,23 +106,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   bool _clicouNoCirculo(LatLng point, LatLng center, double radius) {
-    final double distance = _calculaDistancia(point, center);
+    final double distance = CalculaDistancia().calculaDistancia(point, center);
     return distance <= radius;
-  }
-
-  double _calculaDistancia(LatLng point1, LatLng point2) {
-    const double raioDaTerraEmMetros = 6371000;
-    final double dLat = _grauParaRadianos(point2.latitude - point1.latitude);
-    final double dLng = _grauParaRadianos(point2.longitude - point1.longitude);
-    final double a = math.sin(dLat / 2) * math.sin(dLat / 2) +
-        math.cos(_grauParaRadianos(point1.latitude)) * math.cos(_grauParaRadianos(point2.latitude)) *
-            math.sin(dLng / 2) * math.sin(dLng / 2);
-    final double c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
-    return raioDaTerraEmMetros * c;
-  }
-
-  double _grauParaRadianos(double degrees) {
-    return degrees * math.pi / 180;
   }
 
   @override
@@ -150,13 +135,16 @@ class _HomePageState extends State<HomePage> {
                 Circle(
                   circleId: CircleId('userLocationCircle'),
                   center: LatLng(latitude, longitude),
-                  radius: 70, // Radius in meters
+                  radius: 70,
+                  // Radius in meters
                   fillColor: Colors.green[800]!.withOpacity(0.1),
                   strokeColor: Colors.blue,
                   strokeWidth: 1,
                 ),
               };
             });
+
+            BlocProvider.of<HomeBloc>(context).add(HomeBuscarProblemasEvent(latitude: latitude, longitude: longitude));
           }
 
           if (state is HomeProblemasSuccessState) {

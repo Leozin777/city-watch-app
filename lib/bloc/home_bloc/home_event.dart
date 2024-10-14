@@ -1,11 +1,15 @@
 import 'package:city_watch/data/models/dtos/problema_request_dto.dart';
-import 'package:city_watch/data/models/dtos/problema_response_dto.dart';
 
 abstract class HomeEvent {}
 
 class HomeInitalEvent extends HomeEvent {}
 
-class HomeBuscarProblemasEvent extends HomeEvent {}
+class HomeBuscarProblemasEvent extends HomeEvent {
+  final double latitude;
+  final double longitude;
+
+  HomeBuscarProblemasEvent({required this.latitude, required this.longitude});
+}
 
 class HomeCriarProblemaEvent extends HomeEvent {
   final ProblemaRequestDto problema;
