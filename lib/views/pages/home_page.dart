@@ -7,6 +7,7 @@ import 'package:city_watch/views/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../bloc/home_bloc/home_bloc.dart';
@@ -51,6 +52,7 @@ class _HomePageState extends State<HomePage> {
     _nomeDoProblemaController = TextEditingController();
     _descricaoDoProblemaController = TextEditingController();
     BlocProvider.of<HomeBloc>(context).add(HomeInitalEvent());
+    _startLocationUpdates();
     super.initState();
   }
 
@@ -59,6 +61,33 @@ class _HomePageState extends State<HomePage> {
     _nomeDoProblemaController.dispose();
     _descricaoDoProblemaController.dispose();
     super.dispose();
+  }
+
+  void _startLocationUpdates() {
+    Geolocator.getPositionStream(
+      locationSettings: LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 0,
+      ),
+    ).listen((Position position) {
+      setState(() {
+        latitude = position.latitude;
+        longitude = position.longitude;
+
+        _rangeDoUsuario = {
+          Circle(
+            circleId: CircleId('userLocationCircle'),
+            center: LatLng(latitude, longitude),
+            radius: 70,
+            fillColor: Colors.green[800]!.withOpacity(0.1),
+            strokeColor: Colors.blue,
+            strokeWidth: 1,
+          ),
+        };
+
+        _mapController.animateCamera(CameraUpdate.newLatLng(LatLng(latitude, longitude)));
+      });
+    });
   }
 
   inicializandoCamera() async {
