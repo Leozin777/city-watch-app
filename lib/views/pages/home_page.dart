@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
   late CameraController _cameraController;
   late TextEditingController _nomeDoProblemaController;
   late TextEditingController _descricaoDoProblemaController;
-  Set<Circle> _rangeDoUsuario = {};
+  Set<Marker> _userMarker = {};
   List<TipoProblemaDto> tiposDeProblema = [
     TipoProblemaDto(tipoEnum: ETipoProblema.FaltaDeEnergia, nome: "Falta de energia"),
     TipoProblemaDto(tipoEnum: ETipoProblema.SaneamentoBasico, nome: "Saneamento básico"),
@@ -63,7 +63,12 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  void _startLocationUpdates() {
+  Future<void> _startLocationUpdates() async {
+    iconDoUsuario = await BitmapDescriptor.fromAssetImage(
+      ImageConfiguration(),
+      "assets/icons/navigation.png",
+    );
+
     Geolocator.getPositionStream(
       locationSettings: LocationSettings(
         accuracy: LocationAccuracy.high,
@@ -74,14 +79,12 @@ class _HomePageState extends State<HomePage> {
         latitude = position.latitude;
         longitude = position.longitude;
 
-        _rangeDoUsuario = {
-          Circle(
-            circleId: CircleId('userLocationCircle'),
-            center: LatLng(latitude, longitude),
-            radius: 70,
-            fillColor: Colors.green[800]!.withOpacity(0.1),
-            strokeColor: Colors.blue,
-            strokeWidth: 1,
+
+        _userMarker = {
+          Marker(
+            markerId: MarkerId('userLocationMarker'),
+            position: LatLng(latitude, longitude),
+            icon: iconDoUsuario,
           ),
         };
 
@@ -160,15 +163,12 @@ class _HomePageState extends State<HomePage> {
               myLocationButtonEnabled = true;
               myLocationEnabled = true;
 
-              _rangeDoUsuario = {
-                Circle(
-                  circleId: CircleId('userLocationCircle'),
-                  center: LatLng(latitude, longitude),
-                  radius: 70,
-                  // Radius in meters
-                  fillColor: Colors.green[800]!.withOpacity(0.1),
-                  strokeColor: Colors.blue,
-                  strokeWidth: 1,
+              // Atualiza o marcador com o ícone de navegação verde
+              _userMarker = {
+                Marker(
+                  markerId: MarkerId('userLocationMarker'),
+                  position: LatLng(latitude, longitude),
+                  icon: iconDoUsuario, // Ícone de navegação verde
                 ),
               };
             });
@@ -283,136 +283,7 @@ class _HomePageState extends State<HomePage> {
                 },
                 zoomControlsEnabled: false,
                 mapType: MapType.normal,
-                markers: markers.toSet(),
-                onTap: (value) async {
-                  if (!_clicouNoCirculo(value, LatLng(latitude, longitude), 70)) {
-                    return;
-                  }
-                  TipoProblemaDto? _tipoDeProblemaSelecionado;
-                  final endereco = await retornaLocalizacaoDoUsuario(value.latitude, value.longitude);
-                  String? caminhoDaFoto;
-
-                  await showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    builder: (_) => BottomSheetGenerico(
-                      widgetBottomSheet: Column(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Color(0xFF388E3C),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: const EdgeInsets.all(8.0),
-                            child: const Center(
-                              child: Text(
-                                "Cadastrar problema",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          DropdownButtonFormField<TipoProblemaDto>(
-                            value: _tipoDeProblemaSelecionado,
-                            items: tiposDeProblema
-                                .map((TipoProblemaDto tipoDeProblema) => DropdownMenuItem<TipoProblemaDto>(
-                              value: tipoDeProblema,
-                              child: Text(tipoDeProblema.nome),
-                            ))
-                                .toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                _tipoDeProblemaSelecionado = value as TipoProblemaDto;
-                              });
-                            },
-                            decoration: const InputDecoration(
-                              labelText: "Tipo de problema",
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          TextField(
-                            decoration: const InputDecoration(labelText: "Nome do problema"),
-                            controller: _nomeDoProblemaController,
-                          ),
-                          const SizedBox(height: 20),
-                          TextField(
-                            decoration: const InputDecoration(labelText: "Descrição do problema"),
-                            controller: _descricaoDoProblemaController,
-                          ),
-                          const SizedBox(height: 20),
-                          Text(endereco),
-                          const SizedBox(height: 20),
-
-                          FilledButton(
-                            onPressed: () async {
-                              caminhoDaFoto = await tirarFoto();
-                            },
-                            child: const Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children:  [
-                                Text("Adicione uma foto do problema"),
-                                SizedBox(width: 8),
-                                Icon(Icons.camera_alt),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              FilledButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.arrow_back),
-                                    SizedBox(width: 8),
-                                    Text("Voltar"),
-                                  ],
-                                ),
-                              ),
-                              FilledButton(
-                                onPressed: () {
-                                  limpaControllesrs();
-                                  BlocProvider.of<HomeBloc>(context).add(
-                                    HomeCriarProblemaEvent(
-                                      problema: ProblemaRequestDto(
-                                        nome: _nomeDoProblemaController.text,
-                                        descricao: _descricaoDoProblemaController.text,
-                                        tipoDoProblema: _tipoDeProblemaSelecionado!.tipoEnum,
-                                        localizacao: endereco,
-                                        foto: caminhoDaFoto,
-                                        latitude: value.latitude,
-                                        longitude: value.longitude,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: const Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text("Cadastrar"),
-                                    SizedBox(width: 8),
-                                    Icon(Icons.check),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                  limpaControllesrs();
-                },
-                myLocationButtonEnabled: myLocationButtonEnabled,
-                myLocationEnabled: myLocationEnabled,
-                circles: _rangeDoUsuario,
+                markers: markers.toSet()..addAll(_userMarker),
               ),
             );
           },
