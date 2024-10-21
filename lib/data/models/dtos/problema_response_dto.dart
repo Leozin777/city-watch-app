@@ -9,8 +9,8 @@ class ProblemaResponseDto {
   final double latitude;
   final double longitude;
   final ETipoProblema tipoProblema;
-  final int likes;
-  final int deslikes;
+  final int? likes;
+  final int? deslikes;
   final String nomeDoUsuario;
 
   ProblemaResponseDto(
@@ -35,7 +35,7 @@ class ProblemaResponseDto {
       foto: json['foto'],
       latitude: json['latitude'],
       longitude: json['longitude'],
-      tipoProblema: ETipoProblema.values[json['tipoProblema']],
+      tipoProblema: ETipoProblema.values[json['problemType']],
       likes: json['likes'],
       deslikes: json['deslikes'],
       nomeDoUsuario: json['nomeDoUsuario'],
