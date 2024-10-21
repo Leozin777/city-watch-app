@@ -34,6 +34,9 @@ class _HomePageState extends State<HomePage> {
   bool myLocationEnabled = false;
   double latitude = 0;
   double longitude = 0;
+  double _lastLatitude = 0;
+  double _lastLongitude = 0;
+  double _heading = 0;
   List<Marker> markers = [];
   late CameraController _cameraController;
   late TextEditingController _nomeDoProblemaController;
@@ -76,19 +79,33 @@ class _HomePageState extends State<HomePage> {
       ),
     ).listen((Position position) {
       setState(() {
+        _lastLatitude = latitude;
+        _lastLongitude = longitude;
         latitude = position.latitude;
         longitude = position.longitude;
 
+        if (_lastLatitude != 0 && _lastLongitude != 0) {
+          _heading = Geolocator.bearingBetween(
+              _lastLatitude,
+              _lastLongitude,
+              latitude,
+              longitude
+          );
+        }
 
         _userMarker = {
           Marker(
             markerId: MarkerId('userLocationMarker'),
             position: LatLng(latitude, longitude),
             icon: iconDoUsuario,
+            rotation: _heading,
+            anchor: Offset(0.5, 0.5),
           ),
         };
 
-        _mapController.animateCamera(CameraUpdate.newLatLng(LatLng(latitude, longitude)));
+        _mapController.animateCamera(
+          CameraUpdate.newLatLng(LatLng(latitude, longitude)),
+        );
       });
     });
   }
@@ -161,14 +178,14 @@ class _HomePageState extends State<HomePage> {
               longitude = state.longitude;
               _mapController.animateCamera(CameraUpdate.newLatLng(LatLng(latitude, longitude)));
               myLocationButtonEnabled = true;
-              myLocationEnabled = true;
+              myLocationEnabled = false;
 
-              // Atualiza o marcador com o ícone de navegação verde
               _userMarker = {
                 Marker(
                   markerId: MarkerId('userLocationMarker'),
                   position: LatLng(latitude, longitude),
-                  icon: iconDoUsuario, // Ícone de navegação verde
+                  icon: iconDoUsuario,
+                  rotation: _heading, // Rotação com base na direção do movimento
                 ),
               };
             });
@@ -276,14 +293,17 @@ class _HomePageState extends State<HomePage> {
               child: GoogleMap(
                 initialCameraPosition: CameraPosition(
                   target: _initialPosition,
-                  zoom: 18,
+                  zoom: 16,
                 ),
-                onMapCreated: (GoogleMapController controller) {
-                  _mapController = controller;
-                },
-                zoomControlsEnabled: false,
+                myLocationButtonEnabled: myLocationButtonEnabled,
+                myLocationEnabled: myLocationEnabled,
                 mapType: MapType.normal,
-                markers: markers.toSet()..addAll(_userMarker),
+                markers: _userMarker.union(markers.toSet()),
+                onMapCreated: (GoogleMapController controller) {
+                  setState(() {
+                    _mapController = controller;
+                  });
+                },
               ),
             );
           },
