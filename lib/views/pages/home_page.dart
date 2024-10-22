@@ -5,6 +5,7 @@ import 'package:city_watch/data/models/enums/e_tipo_problema.dart';
 import 'package:city_watch/helpers/calcula_distancia.dart';
 import 'package:city_watch/views/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -289,8 +290,11 @@ class _HomePageState extends State<HomePage> {
                   target: _initialPosition,
                   zoom: 18,
                 ),
-                onMapCreated: (GoogleMapController controller) {
+                onMapCreated: (GoogleMapController controller) async {
                   _mapController = controller;
+
+                  String style = await rootBundle.loadString('assets/config/map-style.json');
+                  _mapController.setMapStyle(style);
                 },
                 zoomControlsEnabled: false,
                 mapType: MapType.normal,
