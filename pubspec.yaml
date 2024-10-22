@@ -70,6 +70,7 @@ flutter:
   assets:
     - assets/icons/danger.png
     - assets/img/city_watch_logo.png
+    - assets/icons/navigation.png
 
   fonts:
     - family: Poppins
