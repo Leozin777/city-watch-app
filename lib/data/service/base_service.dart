@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:city_watch/data/models/enums/e_http_method.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
@@ -25,7 +27,7 @@ class BaseService {
         {
           try {
             return await _autheticatedHttp.post(Uri.parse(url),
-                body: parameters,
+                body: json.encode(parameters),
                 headers: {'Content-Type': 'application/json'});
           } catch (e) {
             rethrow;

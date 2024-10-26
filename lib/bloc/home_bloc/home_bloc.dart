@@ -36,6 +36,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         await _homeService.criarProblema(event.problema);
         emit(HomeCloseLoadingState());
         emit(HomeCriarProblemaSuccessState());
+        add(HomeAtualizaTela());
       } on Exception catch (e) {
         emit(HomeCloseLoadingState());
         emit(HomeFailureState());

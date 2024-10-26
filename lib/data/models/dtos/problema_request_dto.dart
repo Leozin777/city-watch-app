@@ -20,13 +20,13 @@ class ProblemaRequestDto {
 
   Map<String, dynamic> toJson() {
     return {
-      'nome': nome,
-      'descricao': descricao,
-      'tipoDoProblema': tipoDoProblema.index,
-      'localizacao': localizacao,
-      'foto': foto,
+      'name': nome,
+      'address': localizacao,
+      'description': descricao,
       'latitude': latitude,
       'longitude': longitude,
+      'photo': foto == null ? '' : foto,
+      'problemType': tipoDoProblema.value,
     };
   }
 }
