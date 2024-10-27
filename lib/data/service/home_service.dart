@@ -14,7 +14,7 @@ class HomeService extends BaseService implements IHomeService {
   Future<List<ProblemaResponseDto>> getProblemas() async {
     final response = await makeRequest(url: "$baseUrl/problem", method: EHttpMethod.get);
 
-    final data = jsonDecode(response.body);
+    final data = jsonDecode(response!.body);
     final listaDeProblemasJson = data['data'] as List;
 
     final List<ProblemaResponseDto> listaDeProblemas =

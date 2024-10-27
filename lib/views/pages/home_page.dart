@@ -238,6 +238,20 @@ class _HomePageState extends State<HomePage> {
               ),
             );
           }
+
+          if (state is HomeFailureState) {
+            Navigator.of(context).pop();
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Colors.red[700]!,
+                content: const Text(
+                  "Erro ao cadastrar problema",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            );
+          }
         },
         child: BlocBuilder<HomeBloc, HomeState>(
           builder: (context, state) {
