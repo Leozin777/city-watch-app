@@ -30,7 +30,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late GoogleMapController _mapController;
   late LatLng _initialPosition = LatLng(latitude, longitude);
-  late BitmapDescriptor iconDoUsuario;
   bool myLocationButtonEnabled = false;
   bool myLocationEnabled = false;
   double latitude = 0;
@@ -41,12 +40,9 @@ class _HomePageState extends State<HomePage> {
   late TextEditingController _descricaoDoProblemaController;
   Set<Circle> _rangeDoUsuario = {};
   List<TipoProblemaDto> tiposDeProblema = [
-    TipoProblemaDto(
-        tipoEnum: ETipoProblema.FaltaDeEnergia, nome: "Falta de energia"),
-    TipoProblemaDto(
-        tipoEnum: ETipoProblema.SaneamentoBasico, nome: "Saneamento básico"),
-    TipoProblemaDto(
-        tipoEnum: ETipoProblema.Infraestrutura, nome: "Infraestrutura"),
+    TipoProblemaDto(tipoEnum: ETipoProblema.FaltaDeEnergia, nome: "Falta de energia"),
+    TipoProblemaDto(tipoEnum: ETipoProblema.SaneamentoBasico, nome: "Saneamento básico"),
+    TipoProblemaDto(tipoEnum: ETipoProblema.Infraestrutura, nome: "Infraestrutura"),
     TipoProblemaDto(tipoEnum: ETipoProblema.AreaDeRisco, nome: "Segurança"),
     TipoProblemaDto(tipoEnum: ETipoProblema.Outros, nome: "Outros"),
   ];
@@ -54,16 +50,10 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _setCustomMapPin();
     _nomeDoProblemaController = TextEditingController();
     _descricaoDoProblemaController = TextEditingController();
     BlocProvider.of<HomeBloc>(context).add(HomeInitalEvent());
     _startLocationUpdates();
-  }
-
-  void _setCustomMapPin() async {
-    iconDoUsuario = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(devicePixelRatio: 2.5), 'assets/icons/navigation.png');
   }
 
   @override
@@ -84,15 +74,6 @@ class _HomePageState extends State<HomePage> {
         latitude = position.latitude;
         longitude = position.longitude;
 
-
-        markers.add(
-          Marker(
-            markerId: MarkerId('user_location'),
-            position: LatLng(latitude, longitude),
-            icon: iconDoUsuario, // Aqui é onde o ícone do usuário é alterado
-          ),
-        );
-
         _rangeDoUsuario = {
           Circle(
             circleId: CircleId('userLocationCircle'),
@@ -104,8 +85,7 @@ class _HomePageState extends State<HomePage> {
           ),
         };
 
-        _mapController
-            .animateCamera(CameraUpdate.newLatLng(LatLng(latitude, longitude)));
+        _mapController.animateCamera(CameraUpdate.newLatLng(LatLng(latitude, longitude)));
       });
     });
   }
@@ -114,8 +94,7 @@ class _HomePageState extends State<HomePage> {
     final cameras = await availableCameras();
     final cameraTraseira = cameras[1];
 
-    _cameraController =
-        CameraController(cameraTraseira, ResolutionPreset.medium);
+    _cameraController = CameraController(cameraTraseira, ResolutionPreset.medium);
     _cameraController.initialize().then((_) {
       if (!mounted) {
         return;
@@ -177,10 +156,9 @@ class _HomePageState extends State<HomePage> {
             setState(() {
               latitude = state.latitude;
               longitude = state.longitude;
-              _mapController.animateCamera(
-                  CameraUpdate.newLatLng(LatLng(latitude, longitude)));
+              _mapController.animateCamera(CameraUpdate.newLatLng(LatLng(latitude, longitude)));
               myLocationButtonEnabled = true;
-              myLocationEnabled = false;
+              myLocationEnabled = true;
 
               _rangeDoUsuario = {
                 Circle(
@@ -195,8 +173,7 @@ class _HomePageState extends State<HomePage> {
               };
             });
 
-            BlocProvider.of<HomeBloc>(context).add(HomeBuscarProblemasEvent(
-                latitude: latitude, longitude: longitude));
+            BlocProvider.of<HomeBloc>(context).add(HomeBuscarProblemasEvent(latitude: latitude, longitude: longitude));
           }
 
           if (state is HomeProblemasSuccessState) {
@@ -204,8 +181,7 @@ class _HomePageState extends State<HomePage> {
               final mark = Marker(
                   markerId: MarkerId(problema.id.toString()),
                   position: LatLng(problema.latitude, problema.longitude),
-                  icon: await BitmapDescriptor.fromAssetImage(
-                      ImageConfiguration(), "assets/icons/danger.png"),
+                  icon: await BitmapDescriptor.fromAssetImage(ImageConfiguration(), "assets/icons/danger.png"),
                   onTap: () {
                     showModalBottomSheet(
                         context: context,
@@ -218,8 +194,7 @@ class _HomePageState extends State<HomePage> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    Text(
-                                        "${problema.nome}, ${problema.endereco}"),
+                                    Text("${problema.nome}, ${problema.endereco}"),
                                   ],
                                 ),
                                 Row(
@@ -255,11 +230,9 @@ class _HomePageState extends State<HomePage> {
                                   ],
                                 ),
                                 Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Image.network(problema.foto!,
-                                        width: 250, height: 250),
+                                    Image.network(problema.foto!, width: 250, height: 250),
                                     Column(
                                       children: [
                                         Icon(
@@ -315,13 +288,11 @@ class _HomePageState extends State<HomePage> {
                 mapType: MapType.normal,
                 markers: markers.toSet(),
                 onTap: (value) async {
-                  if (!_clicouNoCirculo(
-                      value, LatLng(latitude, longitude), 70)) {
+                  if (!_clicouNoCirculo(value, LatLng(latitude, longitude), 70)) {
                     return;
                   }
                   TipoProblemaDto? _tipoDeProblemaSelecionado;
-                  final endereco = await retornaLocalizacaoDoUsuario(
-                      value.latitude, value.longitude);
+                  final endereco = await retornaLocalizacaoDoUsuario(value.latitude, value.longitude);
                   String? caminhoDaFoto;
 
                   await showModalBottomSheet(
@@ -350,16 +321,14 @@ class _HomePageState extends State<HomePage> {
                           DropdownButtonFormField<TipoProblemaDto>(
                             value: _tipoDeProblemaSelecionado,
                             items: tiposDeProblema
-                                .map((TipoProblemaDto tipoDeProblema) =>
-                                DropdownMenuItem<TipoProblemaDto>(
-                                  value: tipoDeProblema,
-                                  child: Text(tipoDeProblema.nome),
-                                ))
+                                .map((TipoProblemaDto tipoDeProblema) => DropdownMenuItem<TipoProblemaDto>(
+                                      value: tipoDeProblema,
+                                      child: Text(tipoDeProblema.nome),
+                                    ))
                                 .toList(),
                             onChanged: (value) {
                               setState(() {
-                                _tipoDeProblemaSelecionado =
-                                value as TipoProblemaDto;
+                                _tipoDeProblemaSelecionado = value as TipoProblemaDto;
                               });
                             },
                             decoration: const InputDecoration(
@@ -368,14 +337,12 @@ class _HomePageState extends State<HomePage> {
                           ),
                           const SizedBox(height: 20),
                           TextField(
-                            decoration: const InputDecoration(
-                                labelText: "Nome do problema"),
+                            decoration: const InputDecoration(labelText: "Nome do problema"),
                             controller: _nomeDoProblemaController,
                           ),
                           const SizedBox(height: 20),
                           TextField(
-                            decoration: const InputDecoration(
-                                labelText: "Descrição do problema"),
+                            decoration: const InputDecoration(labelText: "Descrição do problema"),
                             controller: _descricaoDoProblemaController,
                           ),
                           const SizedBox(height: 20),
@@ -418,11 +385,8 @@ class _HomePageState extends State<HomePage> {
                                     HomeCriarProblemaEvent(
                                       problema: ProblemaRequestDto(
                                         nome: _nomeDoProblemaController.text,
-                                        descricao:
-                                        _descricaoDoProblemaController.text,
-                                        tipoDoProblema:
-                                        _tipoDeProblemaSelecionado!
-                                            .tipoEnum,
+                                        descricao: _descricaoDoProblemaController.text,
+                                        tipoDoProblema: _tipoDeProblemaSelecionado!.tipoEnum,
                                         localizacao: endereco,
                                         foto: caminhoDaFoto,
                                         latitude: value.latitude,
