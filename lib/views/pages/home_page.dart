@@ -230,7 +230,7 @@ class _HomePageState extends State<HomePage> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Image.network(problema.foto!, width: 250, height: 250),
+                                    if (problema.foto!.isNotEmpty) Image.network(problema.foto!, width: 250, height: 250),
                                     Column(
                                       children: [
                                         Icon(
