@@ -1,6 +1,5 @@
 import 'package:camera/camera.dart';
 import 'package:city_watch/data/models/dtos/problema_request_dto.dart';
-import 'package:city_watch/data/models/dtos/problema_response_dto.dart';
 import 'package:city_watch/data/models/enums/e_tipo_problema.dart';
 import 'package:city_watch/helpers/calcula_distancia.dart';
 import 'package:city_watch/views/widgets/loading_widget.dart';
@@ -16,7 +15,6 @@ import '../../bloc/home_bloc/home_event.dart';
 import '../../bloc/home_bloc/home_state.dart';
 import '../../data/models/tipo_problema_dto.dart';
 import '../widgets/bottom_sheet_generico.dart';
-import 'dart:math' as math;
 
 class HomePage extends StatefulWidget {
   static String route = '/home';
@@ -102,7 +100,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  limpaControllesrs() {
+  limpaControllers() {
     _nomeDoProblemaController.clear();
     _descricaoDoProblemaController.clear();
   }
@@ -179,7 +177,7 @@ class _HomePageState extends State<HomePage> {
           if (state is HomeProblemasSuccessState) {
             state.problemas.forEach((problema) async {
               final mark = Marker(
-                  markerId: MarkerId(problema.id.toString()),
+                  markerId: MarkerId(problema.nome),
                   position: LatLng(problema.latitude, problema.longitude),
                   icon: await BitmapDescriptor.fromAssetImage(ImageConfiguration(), "assets/icons/danger.png"),
                   onTap: () {
@@ -239,7 +237,7 @@ class _HomePageState extends State<HomePage> {
                                           Icons.person,
                                           size: 100,
                                         ),
-                                        Text(problema.nomeDoUsuario),
+                                        Text(problema.nomeDoUsuario ?? "Teste"),
                                       ],
                                     )
                                   ],
@@ -264,6 +262,20 @@ class _HomePageState extends State<HomePage> {
                 backgroundColor: Colors.green[700]!,
                 content: const Text(
                   "Problema cadastrado com sucesso",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            );
+          }
+
+          if (state is HomeFailureState) {
+            Navigator.of(context).pop();
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Colors.red[700]!,
+                content: const Text(
+                  "Erro ao cadastrar problema",
                   style: TextStyle(color: Colors.white),
                 ),
               ),
@@ -380,7 +392,6 @@ class _HomePageState extends State<HomePage> {
                               ),
                               FilledButton(
                                 onPressed: () {
-                                  limpaControllesrs();
                                   BlocProvider.of<HomeBloc>(context).add(
                                     HomeCriarProblemaEvent(
                                       problema: ProblemaRequestDto(
@@ -394,6 +405,7 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                     ),
                                   );
+                                  limpaControllers();
                                 },
                                 child: const Row(
                                   mainAxisSize: MainAxisSize.min,
@@ -410,7 +422,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   );
-                  limpaControllesrs();
+                  limpaControllers();
                 },
                 myLocationButtonEnabled: myLocationButtonEnabled,
                 myLocationEnabled: myLocationEnabled,

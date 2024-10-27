@@ -17,6 +17,8 @@ import 'bloc/auth_bloc/register_bloc/register_bloc.dart';
 import 'data/models/interface/ilocal_storage_helper.dart';
 import 'data/service/authenticate_service.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   setupInjecaoDeDependencia();
   WidgetsFlutterBinding.ensureInitialized();
