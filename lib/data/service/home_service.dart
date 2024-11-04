@@ -17,6 +17,8 @@ class HomeService extends BaseService implements IHomeService {
     final data = jsonDecode(response!.body);
     final listaDeProblemasJson = data['data'] as List;
 
+    if (listaDeProblemasJson.isEmpty) return [];
+
     final List<ProblemaResponseDto> listaDeProblemas =
         listaDeProblemasJson.map((problema) => ProblemaResponseDto.fromJson(problema)).toList();
 
