@@ -59,6 +59,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(HomeOpenLoadingState());
       try {
         final problemas = await _homeService.getProblemas();
+        if (problemas.isEmpty) {
+          emit(HomeCloseLoadingState());
+          return;
+        }
         final problemasDentroDaDistancia = problemas.where((problema) {
           final distance = CalculaDistancia.calculateDistanceEntreDoisPontos(
             event.latitude,
