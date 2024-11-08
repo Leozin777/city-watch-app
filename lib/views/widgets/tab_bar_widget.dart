@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../bloc/home_bloc/home_bloc.dart';
+import '../../data/service/NotificationService.dart';
 
 class TabBarWidget extends StatefulWidget {
-  TabBarWidget({super.key});
+  const TabBarWidget({super.key});
 
   @override
   State<TabBarWidget> createState() => _TabBarWidgetState();
@@ -14,10 +15,12 @@ class TabBarWidget extends StatefulWidget {
 class _TabBarWidgetState extends State<TabBarWidget> {
   int currentIndex = 0;
 
+  final NotificationService notificationService = NotificationService();
+
   Widget _paginaSelecionada() {
     switch (currentIndex) {
       case 0:
-        return BlocProvider<HomeBloc>(create: (context) => HomeBloc(), child: HomePage());
+        return BlocProvider<HomeBloc>(create: (context) => HomeBloc(notificationService), child: HomePage());
       case 1:
         return Container(
           color: Colors.green,

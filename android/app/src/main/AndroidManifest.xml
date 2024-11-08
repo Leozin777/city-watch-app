@@ -2,8 +2,9 @@
 
     <application
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher"
-        android:label="city_watch">
+        android:icon="@mipmap/city_watch_logo"
+        android:label="City Watch">
+        android:enableOnBackInvokedCallback="true">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/ANDROID_MAPS_APIKEY" />

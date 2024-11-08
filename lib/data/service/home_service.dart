@@ -7,7 +7,6 @@ import 'package:city_watch/data/models/interface/ihome_service.dart';
 import 'package:city_watch/data/service/base_service.dart';
 
 import '../../base_url_constante.dart';
-import '../models/enums/e_tipo_problema.dart';
 
 class HomeService extends BaseService implements IHomeService {
   @override
