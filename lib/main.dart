@@ -38,6 +38,7 @@ setupInjecaoDeDependencia() {
   injecaoDeDepencia.registerSingleton<ILocalStorageHelper>(LocalStorageHelper());
   injecaoDeDepencia.registerSingleton<IAuthenticateService>(AuthenticateService());
   injecaoDeDepencia.registerSingleton<IHomeService>(HomeService());
+  injecaoDeDepencia.registerSingleton<NotificationService>(NotificationService());
 }
 
 Future<bool> loginValidation() async {
@@ -62,7 +63,7 @@ class MyApp extends StatelessWidget {
               create: (context) => LoginBloc(),
               child: const LoginPage(),
             ),
-        HomePage.route: (context) => BlocProvider(create: (context) => HomeBloc(notificationService), child: const HomePage()),
+        HomePage.route: (context) => BlocProvider(create: (context) => HomeBloc(), child: const HomePage()),
         RegisterPage.route: (context) => BlocProvider(
               create: (context) => RegisterBloc(),
               child: const RegisterPage(),

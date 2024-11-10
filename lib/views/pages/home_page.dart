@@ -30,7 +30,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   StreamSubscription<Position>? _locationSubscription;
-  final NotificationService notificationService = NotificationService();
   late GoogleMapController _mapController;
   late final LatLng _initialPosition = LatLng(latitude, longitude);
   bool myLocationButtonEnabled = false;
@@ -57,7 +56,6 @@ class _HomePageState extends State<HomePage> {
     _descricaoDoProblemaController = TextEditingController();
     BlocProvider.of<HomeBloc>(context).add(HomeInitalEvent());
     _startLocationUpdates();
-    notificationService.init();
   }
 
   @override

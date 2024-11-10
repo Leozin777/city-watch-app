@@ -11,83 +11,69 @@ import 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final IHomeService _homeService = injecaoDeDepencia<IHomeService>();
-  final NotificationService notificationService;
+  final NotificationService notificationService = injecaoDeDepencia<NotificationService>();
   List<ProblemaResponseDto> problemasAnteriores = [];
   Set<String> problemasNotificados = {};
   Map<String, DateTime> ultimaNotificacaoProblema = {};
 
-  HomeBloc(this.notificationService) : super(HomeInitialState()) {
-    on<HomeInitalEvent>(_onHomeInitalEvent);
-    on<HomeCriarProblemaEvent>(_onHomeCriarProblemaEvent);
-    on<HomeAtualizaTela>(_onHomeAtualizaTela);
-    on<HomeBuscarProblemasEvent>(_onHomeBuscarProblemasEvent);
-  }
-
-  Future<void> _onHomeInitalEvent(HomeInitalEvent event,
-      Emitter<HomeState> emit) async {
-    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      emit(HomeLocationServiceDisabledState());
-      return;
-    }
-
-    final permissao = await Geolocator.checkPermission();
-    if (permissao == LocationPermission.denied) {
-      final permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied ||
-          permission == LocationPermission.deniedForever) {
-        emit(HomeLocalizacaoNegadaState());
+  HomeBloc() : super(HomeInitialState()) {
+    on<HomeInitalEvent>((event, emit) async {
+      notificationService.init();
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        emit(HomeLocationServiceDisabledState());
         return;
       }
-    }
 
-    Position position = await Geolocator.getCurrentPosition();
-    emit(HomeLocalizacaoDoUsuarioSuccessState(
-        latitude: position.latitude, longitude: position.longitude));
+      final permissao = await Geolocator.checkPermission();
+      if (permissao == LocationPermission.denied) {
+        final permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+          emit(HomeLocalizacaoNegadaState());
+          return;
+        }
+      }
+
+      Position position = await Geolocator.getCurrentPosition();
+      emit(HomeLocalizacaoDoUsuarioSuccessState(latitude: position.latitude, longitude: position.longitude));
+    });
+    on<HomeCriarProblemaEvent>((event, emit) async {
+      emit(HomeOpenLoadingState());
+      try {
+        await _homeService.criarProblema(event.problema);
+        emit(HomeCloseLoadingState());
+        emit(HomeCriarProblemaSuccessState());
+        add(HomeAtualizaTela());
+      } catch (e) {
+        emit(HomeCloseLoadingState());
+        emit(HomeFailureState());
+      }
+    });
+    on<HomeAtualizaTela>((event, emit) async {
+      emit(HomeOpenLoadingState());
+      try {
+        final problemas = await _homeService.getProblemas();
+        emit(HomeCloseLoadingState());
+        emit(HomeProblemasSuccessState(problemas: problemas));
+      } catch (e) {
+        emit(HomeCloseLoadingState());
+        emit(HomeFailureState());
+      }
+    });
+    on<HomeBuscarProblemasEvent>((event, emit) async {
+      emit(HomeOpenLoadingState());
+      try {
+        final problemas = await _homeService.getProblemas();
+        emit(HomeCloseLoadingState());
+        emit(HomeProblemasSuccessState(problemas: problemas));
+
+        await _verificarProblemasProximos();
+      } catch (e) {
+        emit(HomeCloseLoadingState());
+        emit(HomeFailureState());
+      }
+    });
   }
-
-  Future<void> _onHomeCriarProblemaEvent(HomeCriarProblemaEvent event,
-      Emitter<HomeState> emit) async {
-    emit(HomeOpenLoadingState());
-    try {
-      await _homeService.criarProblema(event.problema);
-      emit(HomeCloseLoadingState());
-      emit(HomeCriarProblemaSuccessState());
-      add(HomeAtualizaTela());
-    } catch (e) {
-      emit(HomeCloseLoadingState());
-      emit(HomeFailureState());
-    }
-  }
-
-  Future<void> _onHomeAtualizaTela(HomeAtualizaTela event,
-      Emitter<HomeState> emit) async {
-    emit(HomeOpenLoadingState());
-    try {
-      final problemas = await _homeService.getProblemas();
-      emit(HomeCloseLoadingState());
-      emit(HomeProblemasSuccessState(problemas: problemas));
-    } catch (e) {
-      emit(HomeCloseLoadingState());
-      emit(HomeFailureState());
-    }
-  }
-
-  Future<void> _onHomeBuscarProblemasEvent(HomeBuscarProblemasEvent event,
-      Emitter<HomeState> emit) async {
-    emit(HomeOpenLoadingState());
-    try {
-      final problemas = await _homeService.getProblemas();
-      emit(HomeCloseLoadingState());
-      emit(HomeProblemasSuccessState(problemas: problemas));
-
-      await _verificarProblemasProximos();
-    } catch (e) {
-      emit(HomeCloseLoadingState());
-      emit(HomeFailureState());
-    }
-  }
-
   Future<void> _verificarProblemasProximos() async {
     Position position = await Geolocator.getCurrentPosition();
     double latitude = position.latitude;
