@@ -50,7 +50,13 @@ class BaseService {
 
       case EHttpMethod.put:
         try {
-          return await _autheticatedHttp.put(Uri.parse(url), body: parameters, headers: {'Content-Type': 'application/json'});
+          final response = await _autheticatedHttp.put(Uri.parse(url), body: parameters, headers: {'Content-Type': 'application/json'});
+          final result = trataResponseApi(response);
+          if (!result) {
+            return response;
+          } else {
+            return null;
+          }
         } catch (e) {
           rethrow;
         }
