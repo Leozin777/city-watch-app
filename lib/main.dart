@@ -15,9 +15,11 @@ import 'package:flutter_config/flutter_config.dart';
 import 'package:get_it/get_it.dart';
 import 'bloc/auth_bloc/register_bloc/register_bloc.dart';
 import 'data/models/interface/ilocal_storage_helper.dart';
+import 'data/service/NotificationService.dart';
 import 'data/service/authenticate_service.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+final NotificationService notificationService = NotificationService();
 
 void main() async {
   setupInjecaoDeDependencia();
@@ -36,6 +38,7 @@ setupInjecaoDeDependencia() {
   injecaoDeDepencia.registerSingleton<ILocalStorageHelper>(LocalStorageHelper());
   injecaoDeDepencia.registerSingleton<IAuthenticateService>(AuthenticateService());
   injecaoDeDepencia.registerSingleton<IHomeService>(HomeService());
+  injecaoDeDepencia.registerSingleton<NotificationService>(NotificationService());
 }
 
 Future<bool> loginValidation() async {

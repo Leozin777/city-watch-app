@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:camera/camera.dart';
 import 'package:city_watch/data/models/dtos/problema_request_dto.dart';
 import 'package:city_watch/data/models/enums/e_tipo_problema.dart';
 import 'package:city_watch/helpers/calcula_distancia.dart';
+import 'package:city_watch/helpers/popup_helper.dart';
 import 'package:city_watch/views/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,8 +29,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late GoogleMapController _mapController;
-  late LatLng _initialPosition = LatLng(latitude, longitude);
+  StreamSubscription<Position>? _locationSubscription;
+  GoogleMapController? _mapController;
+  late LatLng _initialPosition;
   bool myLocationButtonEnabled = false;
   bool myLocationEnabled = false;
   double latitude = 0;
@@ -48,6 +52,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    _initialPosition = LatLng(latitude, longitude);
     _nomeDoProblemaController = TextEditingController();
     _descricaoDoProblemaController = TextEditingController();
     BlocProvider.of<HomeBloc>(context).add(HomeInitalEvent());
@@ -58,33 +63,39 @@ class _HomePageState extends State<HomePage> {
   dispose() {
     _nomeDoProblemaController.dispose();
     _descricaoDoProblemaController.dispose();
+    _locationSubscription?.cancel();
     super.dispose();
   }
 
   void _startLocationUpdates() {
-    Geolocator.getPositionStream(
+    _locationSubscription = Geolocator.getPositionStream(
       locationSettings: LocationSettings(
         accuracy: LocationAccuracy.high,
         distanceFilter: 0,
       ),
     ).listen((Position position) {
-      setState(() {
-        latitude = position.latitude;
-        longitude = position.longitude;
+      if (mounted) {
+        setState(() {
+          latitude = position.latitude;
+          longitude = position.longitude;
 
-        _rangeDoUsuario = {
-          Circle(
-            circleId: CircleId('userLocationCircle'),
-            center: LatLng(latitude, longitude),
-            radius: 70,
-            fillColor: Colors.green[800]!.withOpacity(0.1),
-            strokeColor: Colors.blue,
-            strokeWidth: 1,
-          ),
-        };
+          _rangeDoUsuario = {
+            Circle(
+              circleId: CircleId('userLocationCircle'),
+              center: LatLng(latitude, longitude),
+              radius: 70,
+              fillColor: Colors.green[800]!.withOpacity(0.1),
+              strokeColor: Colors.blue,
+              strokeWidth: 1,
+            ),
+          };
 
-        _mapController.animateCamera(CameraUpdate.newLatLng(LatLng(latitude, longitude)));
-      });
+          if (_mapController != null) {
+            _mapController!.animateCamera(CameraUpdate.newLatLng(LatLng(latitude, longitude)));
+          }
+        });
+        BlocProvider.of<HomeBloc>(context).add(HomeBuscarProblemasEvent(latitude: latitude, longitude: longitude));
+      }
     });
   }
 
@@ -114,7 +125,7 @@ class _HomePageState extends State<HomePage> {
 
       _cameraController.dispose();
       return foto.path;
-    } on Exception catch (e) {
+    } on Exception {
       return null;
     }
   }
@@ -126,7 +137,7 @@ class _HomePageState extends State<HomePage> {
         Placemark place = placemarks[0];
         return "${place.street}, ${place.locality}";
       }
-    } on Exception catch (e) {
+    } on Exception {
       return 'Endereço não encontrado';
     }
     return 'Endereço não encontrado';
@@ -147,14 +158,14 @@ class _HomePageState extends State<HomePage> {
           }
 
           if (state is HomeCloseLoadingState) {
-            Navigator.of(context).pop();
+            PopupHelper.fecharPopup(context);
           }
 
           if (state is HomeLocalizacaoDoUsuarioSuccessState) {
             setState(() {
               latitude = state.latitude;
               longitude = state.longitude;
-              _mapController.animateCamera(CameraUpdate.newLatLng(LatLng(latitude, longitude)));
+              _mapController!.animateCamera(CameraUpdate.newLatLng(LatLng(latitude, longitude)));
               myLocationButtonEnabled = true;
               myLocationEnabled = true;
 
@@ -255,7 +266,7 @@ class _HomePageState extends State<HomePage> {
           }
 
           if (state is HomeCriarProblemaSuccessState) {
-            Navigator.of(context).pop();
+            PopupHelper.fecharPopup(context);
 
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -269,13 +280,12 @@ class _HomePageState extends State<HomePage> {
           }
 
           if (state is HomeFailureState) {
-            Navigator.of(context).pop();
-
+            PopupHelper.fecharPopup(context);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 backgroundColor: Colors.red[700]!,
-                content: const Text(
-                  "Erro ao cadastrar problema",
+                content: Text(
+                  state.message,
                   style: TextStyle(color: Colors.white),
                 ),
               ),
@@ -294,7 +304,7 @@ class _HomePageState extends State<HomePage> {
                   _mapController = controller;
 
                   String style = await rootBundle.loadString('assets/config/map-style.json');
-                  _mapController.setMapStyle(style);
+                  _mapController!.setMapStyle(style);
                 },
                 zoomControlsEnabled: false,
                 mapType: MapType.normal,
@@ -303,7 +313,7 @@ class _HomePageState extends State<HomePage> {
                   if (!_clicouNoCirculo(value, LatLng(latitude, longitude), 70)) {
                     return;
                   }
-                  TipoProblemaDto? _tipoDeProblemaSelecionado;
+                  TipoProblemaDto? tipoDeProblemaSelecionado;
                   final endereco = await retornaLocalizacaoDoUsuario(value.latitude, value.longitude);
                   String? caminhoDaFoto;
 
@@ -331,7 +341,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           const SizedBox(height: 20),
                           DropdownButtonFormField<TipoProblemaDto>(
-                            value: _tipoDeProblemaSelecionado,
+                            value: tipoDeProblemaSelecionado,
                             items: tiposDeProblema
                                 .map((TipoProblemaDto tipoDeProblema) => DropdownMenuItem<TipoProblemaDto>(
                                       value: tipoDeProblema,
@@ -340,7 +350,7 @@ class _HomePageState extends State<HomePage> {
                                 .toList(),
                             onChanged: (value) {
                               setState(() {
-                                _tipoDeProblemaSelecionado = value as TipoProblemaDto;
+                                tipoDeProblemaSelecionado = value as TipoProblemaDto;
                               });
                             },
                             decoration: const InputDecoration(
@@ -379,7 +389,7 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               FilledButton(
                                 onPressed: () {
-                                  Navigator.of(context).pop();
+                                  PopupHelper.fecharPopup(context);
                                 },
                                 child: const Row(
                                   mainAxisSize: MainAxisSize.min,
@@ -397,7 +407,7 @@ class _HomePageState extends State<HomePage> {
                                       problema: ProblemaRequestDto(
                                         nome: _nomeDoProblemaController.text,
                                         descricao: _descricaoDoProblemaController.text,
-                                        tipoDoProblema: _tipoDeProblemaSelecionado!.tipoEnum,
+                                        tipoDoProblema: tipoDeProblemaSelecionado!.tipoEnum,
                                         localizacao: endereco,
                                         foto: caminhoDaFoto,
                                         latitude: value.latitude,

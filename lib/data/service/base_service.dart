@@ -17,7 +17,8 @@ class BaseService {
       case EHttpMethod.get:
         {
           try {
-            final response = await _autheticatedHttp.get(Uri.parse(url), headers: {'Content-Type': 'application/json'});
+            final response =
+                await _autheticatedHttp.get(Uri.parse(url), headers: {'Content-Type': 'application/json'}).timeout(Duration(seconds: 10));
 
             final result = trataResponseApi(response);
 

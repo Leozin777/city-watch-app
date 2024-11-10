@@ -21,7 +21,7 @@ class _LoginPageState extends State<LoginPage> {
   late TextEditingController _emailController;
   late TextEditingController _senhaController;
 
-  bool _obscureText = true;
+  final bool _obscureText = true;
   bool _emailError = false;
   bool _senhaError = false;
 
@@ -165,13 +165,13 @@ class _LoginPageState extends State<LoginPage> {
                                 );
                               },
                               style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(const Color(0xFF6A9C89)),
-                                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                backgroundColor: WidgetStateProperty.all(const Color(0xFF6A9C89)),
+                                shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(5.0),
                                   ),
                                 ),
-                                padding: MaterialStateProperty.all(const EdgeInsets.symmetric(vertical: 16)),
+                                padding: WidgetStateProperty.all(const EdgeInsets.symmetric(vertical: 16)),
                               ),
                               child: const Text(
                                 'LOGIN',

@@ -6,7 +6,7 @@ import '../pages/profile_page.dart';
 import '../pages/setting_page.dart';
 
 class TabBarWidget extends StatefulWidget {
-  TabBarWidget({super.key});
+  const TabBarWidget({super.key});
 
   @override
   State<TabBarWidget> createState() => _TabBarWidgetState();
@@ -14,7 +14,6 @@ class TabBarWidget extends StatefulWidget {
 
 class _TabBarWidgetState extends State<TabBarWidget> {
   int currentIndex = 0;
-
   Widget _paginaSelecionada() {
     switch (currentIndex) {
       case 0:

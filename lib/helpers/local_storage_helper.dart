@@ -7,9 +7,7 @@ class LocalStorageHelper implements ILocalStorageHelper {
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
   Future<SharedPreferences> get _localStorage async {
-    if (_localStorageCache == null) {
-      _localStorageCache = await SharedPreferences.getInstance();
-    }
+    _localStorageCache ??= await SharedPreferences.getInstance();
     return _localStorageCache!;
   }
 

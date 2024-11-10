@@ -25,7 +25,7 @@ class ProblemaRequestDto {
       'description': descricao,
       'latitude': latitude,
       'longitude': longitude,
-      'photo': foto == null ? '' : foto,
+      'photo': foto ?? '',
       'problemType': tipoDoProblema.value,
     };
   }
