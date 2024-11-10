@@ -35,7 +35,7 @@ class AuthenticateService implements IAuthenticateService {
 
       final decodedJson = json.decode(response.body);
       return decodedJson["message"].toString();
-    } on Exception catch (e) {
+    } on Exception {
       rethrow;
     }
   }
@@ -65,7 +65,7 @@ class AuthenticateService implements IAuthenticateService {
       } else {
         return false;
       }
-    } on Exception catch (e) {
+    } on Exception {
       rethrow;
     }
   }

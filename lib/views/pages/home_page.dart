@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:camera/camera.dart';
 import 'package:city_watch/data/models/dtos/problema_request_dto.dart';
 import 'package:city_watch/data/models/enums/e_tipo_problema.dart';
@@ -14,6 +16,7 @@ import '../../bloc/home_bloc/home_bloc.dart';
 import '../../bloc/home_bloc/home_event.dart';
 import '../../bloc/home_bloc/home_state.dart';
 import '../../data/models/tipo_problema_dto.dart';
+import '../../data/service/NotificationService.dart';
 import '../widgets/bottom_sheet_generico.dart';
 
 class HomePage extends StatefulWidget {
@@ -26,8 +29,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  StreamSubscription<Position>? _locationSubscription;
   late GoogleMapController _mapController;
-  late LatLng _initialPosition = LatLng(latitude, longitude);
+  late final LatLng _initialPosition = LatLng(latitude, longitude);
   bool myLocationButtonEnabled = false;
   bool myLocationEnabled = false;
   double latitude = 0;
@@ -58,36 +62,39 @@ class _HomePageState extends State<HomePage> {
   dispose() {
     _nomeDoProblemaController.dispose();
     _descricaoDoProblemaController.dispose();
+    _locationSubscription?.cancel();
     super.dispose();
   }
 
   void _startLocationUpdates() {
-    Geolocator.getPositionStream(
+    _locationSubscription = Geolocator.getPositionStream(
       locationSettings: LocationSettings(
         accuracy: LocationAccuracy.high,
         distanceFilter: 0,
       ),
     ).listen((Position position) {
-      setState(() {
-        latitude = position.latitude;
-        longitude = position.longitude;
+      if (mounted) {
+        setState(() {
+          latitude = position.latitude;
+          longitude = position.longitude;
 
-        _rangeDoUsuario = {
-          Circle(
-            circleId: CircleId('userLocationCircle'),
-            center: LatLng(latitude, longitude),
-            radius: 70,
-            fillColor: Colors.green[800]!.withOpacity(0.1),
-            strokeColor: Colors.blue,
-            strokeWidth: 1,
-          ),
-        };
+          _rangeDoUsuario = {
+            Circle(
+              circleId: CircleId('userLocationCircle'),
+              center: LatLng(latitude, longitude),
+              radius: 70,
+              fillColor: Colors.green[800]!.withOpacity(0.1),
+              strokeColor: Colors.blue,
+              strokeWidth: 1,
+            ),
+          };
 
-        _mapController.animateCamera(CameraUpdate.newLatLng(LatLng(latitude, longitude)));
-      });
+          _mapController.animateCamera(CameraUpdate.newLatLng(LatLng(latitude, longitude)));
+        });
+        BlocProvider.of<HomeBloc>(context).add(HomeBuscarProblemasEvent(latitude: latitude, longitude: longitude));
+      }
     });
   }
-
   inicializandoCamera() async {
     final cameras = await availableCameras();
     final cameraTraseira = cameras[1];
@@ -114,7 +121,7 @@ class _HomePageState extends State<HomePage> {
 
       _cameraController.dispose();
       return foto.path;
-    } on Exception catch (e) {
+    } on Exception {
       return null;
     }
   }
@@ -126,7 +133,7 @@ class _HomePageState extends State<HomePage> {
         Placemark place = placemarks[0];
         return "${place.street}, ${place.locality}";
       }
-    } on Exception catch (e) {
+    } on Exception {
       return 'Endereço não encontrado';
     }
     return 'Endereço não encontrado';
@@ -303,7 +310,7 @@ class _HomePageState extends State<HomePage> {
                   if (!_clicouNoCirculo(value, LatLng(latitude, longitude), 70)) {
                     return;
                   }
-                  TipoProblemaDto? _tipoDeProblemaSelecionado;
+                  TipoProblemaDto? tipoDeProblemaSelecionado;
                   final endereco = await retornaLocalizacaoDoUsuario(value.latitude, value.longitude);
                   String? caminhoDaFoto;
 
@@ -331,7 +338,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           const SizedBox(height: 20),
                           DropdownButtonFormField<TipoProblemaDto>(
-                            value: _tipoDeProblemaSelecionado,
+                            value: tipoDeProblemaSelecionado,
                             items: tiposDeProblema
                                 .map((TipoProblemaDto tipoDeProblema) => DropdownMenuItem<TipoProblemaDto>(
                                       value: tipoDeProblema,
@@ -340,7 +347,7 @@ class _HomePageState extends State<HomePage> {
                                 .toList(),
                             onChanged: (value) {
                               setState(() {
-                                _tipoDeProblemaSelecionado = value as TipoProblemaDto;
+                                tipoDeProblemaSelecionado = value as TipoProblemaDto;
                               });
                             },
                             decoration: const InputDecoration(
@@ -397,7 +404,7 @@ class _HomePageState extends State<HomePage> {
                                       problema: ProblemaRequestDto(
                                         nome: _nomeDoProblemaController.text,
                                         descricao: _descricaoDoProblemaController.text,
-                                        tipoDoProblema: _tipoDeProblemaSelecionado!.tipoEnum,
+                                        tipoDoProblema: tipoDeProblemaSelecionado!.tipoEnum,
                                         localizacao: endereco,
                                         foto: caminhoDaFoto,
                                         latitude: value.latitude,

@@ -11,17 +11,17 @@ class LoadingWidget extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.all(20),
         child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircularProgressIndicator(),
             Padding(
+              padding: EdgeInsets.all(10),
               child: Text(
                 textoDoLoading ?? "Carregando...",
               ),
-              padding: EdgeInsets.all(10),
             )
           ],
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
         ),
       ),
     );
