@@ -8,7 +8,11 @@ class HomeOpenLoadingState extends HomeState {}
 
 class HomeCloseLoadingState extends HomeState {}
 
-class HomeFailureState extends HomeState {}
+class HomeFailureState extends HomeState {
+  String message;
+
+  HomeFailureState({required this.message});
+}
 
 class HomeLocalizacaoNegadaState extends HomeState {}
 

@@ -46,7 +46,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         add(HomeAtualizaTela());
       } catch (e) {
         emit(HomeCloseLoadingState());
-        emit(HomeFailureState());
+        emit(HomeFailureState(message: "Erro ao criar problema"));
       }
     });
     on<HomeAtualizaTela>((event, emit) async {
@@ -57,7 +57,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         emit(HomeProblemasSuccessState(problemas: problemas));
       } catch (e) {
         emit(HomeCloseLoadingState());
-        emit(HomeFailureState());
+        emit(HomeFailureState(message: "Erro ao buscar problemas"));
       }
     });
     on<HomeBuscarProblemasEvent>((event, emit) async {
@@ -70,10 +70,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         await _verificarProblemasProximos();
       } catch (e) {
         emit(HomeCloseLoadingState());
-        emit(HomeFailureState());
+        emit(HomeFailureState(message: "Erro ao buscar problemas"));
       }
     });
   }
+
   Future<void> _verificarProblemasProximos() async {
     Position position = await Geolocator.getCurrentPosition();
     double latitude = position.latitude;

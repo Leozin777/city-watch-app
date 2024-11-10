@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:city_watch/data/models/dtos/problema_request_dto.dart';
 import 'package:city_watch/data/models/enums/e_tipo_problema.dart';
 import 'package:city_watch/helpers/calcula_distancia.dart';
+import 'package:city_watch/helpers/popup_helper.dart';
 import 'package:city_watch/views/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,7 +17,6 @@ import '../../bloc/home_bloc/home_bloc.dart';
 import '../../bloc/home_bloc/home_event.dart';
 import '../../bloc/home_bloc/home_state.dart';
 import '../../data/models/tipo_problema_dto.dart';
-import '../../data/service/NotificationService.dart';
 import '../widgets/bottom_sheet_generico.dart';
 
 class HomePage extends StatefulWidget {
@@ -30,8 +30,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   StreamSubscription<Position>? _locationSubscription;
-  late GoogleMapController _mapController;
-  late final LatLng _initialPosition = LatLng(latitude, longitude);
+  GoogleMapController? _mapController;
+  late LatLng _initialPosition;
   bool myLocationButtonEnabled = false;
   bool myLocationEnabled = false;
   double latitude = 0;
@@ -52,6 +52,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    _initialPosition = LatLng(latitude, longitude);
     _nomeDoProblemaController = TextEditingController();
     _descricaoDoProblemaController = TextEditingController();
     BlocProvider.of<HomeBloc>(context).add(HomeInitalEvent());
@@ -89,12 +90,15 @@ class _HomePageState extends State<HomePage> {
             ),
           };
 
-          _mapController.animateCamera(CameraUpdate.newLatLng(LatLng(latitude, longitude)));
+          if (_mapController != null) {
+            _mapController!.animateCamera(CameraUpdate.newLatLng(LatLng(latitude, longitude)));
+          }
         });
         BlocProvider.of<HomeBloc>(context).add(HomeBuscarProblemasEvent(latitude: latitude, longitude: longitude));
       }
     });
   }
+
   inicializandoCamera() async {
     final cameras = await availableCameras();
     final cameraTraseira = cameras[1];
@@ -154,14 +158,14 @@ class _HomePageState extends State<HomePage> {
           }
 
           if (state is HomeCloseLoadingState) {
-            Navigator.of(context).pop();
+            PopupHelper.fecharPopup(context);
           }
 
           if (state is HomeLocalizacaoDoUsuarioSuccessState) {
             setState(() {
               latitude = state.latitude;
               longitude = state.longitude;
-              _mapController.animateCamera(CameraUpdate.newLatLng(LatLng(latitude, longitude)));
+              _mapController!.animateCamera(CameraUpdate.newLatLng(LatLng(latitude, longitude)));
               myLocationButtonEnabled = true;
               myLocationEnabled = true;
 
@@ -262,7 +266,7 @@ class _HomePageState extends State<HomePage> {
           }
 
           if (state is HomeCriarProblemaSuccessState) {
-            Navigator.of(context).pop();
+            PopupHelper.fecharPopup(context);
 
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -276,13 +280,12 @@ class _HomePageState extends State<HomePage> {
           }
 
           if (state is HomeFailureState) {
-            Navigator.of(context).pop();
-
+            PopupHelper.fecharPopup(context);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 backgroundColor: Colors.red[700]!,
-                content: const Text(
-                  "Erro ao cadastrar problema",
+                content: Text(
+                  state.message,
                   style: TextStyle(color: Colors.white),
                 ),
               ),
@@ -301,7 +304,7 @@ class _HomePageState extends State<HomePage> {
                   _mapController = controller;
 
                   String style = await rootBundle.loadString('assets/config/map-style.json');
-                  _mapController.setMapStyle(style);
+                  _mapController!.setMapStyle(style);
                 },
                 zoomControlsEnabled: false,
                 mapType: MapType.normal,
@@ -386,7 +389,7 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               FilledButton(
                                 onPressed: () {
-                                  Navigator.of(context).pop();
+                                  PopupHelper.fecharPopup(context);
                                 },
                                 child: const Row(
                                   mainAxisSize: MainAxisSize.min,
