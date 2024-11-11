@@ -40,6 +40,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<HomeCriarProblemaEvent>((event, emit) async {
       emit(HomeOpenLoadingState());
       try {
+        Position position = await Geolocator.getCurrentPosition();
+        double latitude = position.latitude;
+        double longitude = position.longitude;
+
+        bool problemaProximo = await _verificarTipoProblemaProximo(latitude, longitude);
+        if (problemaProximo) {
+          emit(HomeCloseLoadingState());
+          emit(HomeFailureState(message: "Problema semelhante já cadastrado"));
+          return;
+        }
+
         await _homeService.criarProblema(event.problema);
         emit(HomeCloseLoadingState());
         emit(HomeCriarProblemaSuccessState());
@@ -74,7 +85,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       }
     });
   }
-
   Future<void> _verificarProblemasProximos() async {
     Position position = await Geolocator.getCurrentPosition();
     double latitude = position.latitude;
@@ -102,12 +112,27 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           continue;
         }
       }
-
       notificationService.showNotification(
         'Problema Proximo',
         'Problema "${problema.nome}" à frente.',
       );
       ultimaNotificacaoProblema[chaveProblema] = agora;
     }
+  }
+
+  Future<bool> _verificarTipoProblemaProximo(double latitude, double longitude) async {
+    final problemas = await _homeService.getProblemas();
+    for (var problema in problemas) {
+      double distance = CalculaDistancia.calculateDistanceEntreDoisPontos(
+        latitude,
+        longitude,
+        problema.latitude,
+        problema.longitude,
+      );
+      if (distance <= 0.2 && !(problema.tipoProblema.value == 3 || problema.tipoProblema.value == 5)) {
+        return true;
+      }
+    }
+    return false;
   }
 }
