@@ -42,8 +42,12 @@ class AuthenticateService implements IAuthenticateService {
 
   @override
   Future<bool> isAutheticated() async {
-    final isAuth = await _localStorageHelper.getStringSecureStorage(keyTokenLogin);
-    return isAuth != null;
+    try {
+      final isAuth = await _localStorageHelper.getStringSecureStorage(keyTokenLogin);
+      return isAuth != null;
+    } on Exception catch (e) {
+      return false;
+    }
   }
 
   @override
