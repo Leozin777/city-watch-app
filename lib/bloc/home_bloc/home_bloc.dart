@@ -46,7 +46,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         add(HomeAtualizaTela());
       } catch (e) {
         emit(HomeCloseLoadingState());
-        emit(HomeFailureState(message: "Erro ao criar problema"));
+        emit(HomeFailureState(message: "Todos os campos devem ser preenchidos"));
       }
     });
     on<HomeAtualizaTela>((event, emit) async {

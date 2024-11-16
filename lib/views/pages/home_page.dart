@@ -42,9 +42,12 @@ class _HomePageState extends State<HomePage> {
   late TextEditingController _descricaoDoProblemaController;
   Set<Circle> _rangeDoUsuario = {};
   List<TipoProblemaDto> tiposDeProblema = [
-    TipoProblemaDto(tipoEnum: ETipoProblema.FaltaDeEnergia, nome: "Falta de energia"),
-    TipoProblemaDto(tipoEnum: ETipoProblema.SaneamentoBasico, nome: "Saneamento básico"),
-    TipoProblemaDto(tipoEnum: ETipoProblema.Infraestrutura, nome: "Infraestrutura"),
+    TipoProblemaDto(
+        tipoEnum: ETipoProblema.FaltaDeEnergia, nome: "Falta de energia"),
+    TipoProblemaDto(
+        tipoEnum: ETipoProblema.SaneamentoBasico, nome: "Saneamento básico"),
+    TipoProblemaDto(
+        tipoEnum: ETipoProblema.Infraestrutura, nome: "Infraestrutura"),
     TipoProblemaDto(tipoEnum: ETipoProblema.AreaDeRisco, nome: "Segurança"),
     TipoProblemaDto(tipoEnum: ETipoProblema.Outros, nome: "Outros"),
   ];
@@ -91,10 +94,12 @@ class _HomePageState extends State<HomePage> {
           };
 
           if (_mapController != null) {
-            _mapController!.animateCamera(CameraUpdate.newLatLng(LatLng(latitude, longitude)));
+            _mapController!.animateCamera(
+                CameraUpdate.newLatLng(LatLng(latitude, longitude)));
           }
         });
-        BlocProvider.of<HomeBloc>(context).add(HomeBuscarProblemasEvent(latitude: latitude, longitude: longitude));
+        BlocProvider.of<HomeBloc>(context).add(
+            HomeBuscarProblemasEvent(latitude: latitude, longitude: longitude));
       }
     });
   }
@@ -103,7 +108,8 @@ class _HomePageState extends State<HomePage> {
     final cameras = await availableCameras();
     final cameraTraseira = cameras[1];
 
-    _cameraController = CameraController(cameraTraseira, ResolutionPreset.medium);
+    _cameraController =
+        CameraController(cameraTraseira, ResolutionPreset.medium);
     _cameraController.initialize().then((_) {
       if (!mounted) {
         return;
@@ -165,7 +171,8 @@ class _HomePageState extends State<HomePage> {
             setState(() {
               latitude = state.latitude;
               longitude = state.longitude;
-              _mapController!.animateCamera(CameraUpdate.newLatLng(LatLng(latitude, longitude)));
+              _mapController!.animateCamera(
+                  CameraUpdate.newLatLng(LatLng(latitude, longitude)));
               myLocationButtonEnabled = true;
               myLocationEnabled = true;
 
@@ -182,7 +189,8 @@ class _HomePageState extends State<HomePage> {
               };
             });
 
-            BlocProvider.of<HomeBloc>(context).add(HomeBuscarProblemasEvent(latitude: latitude, longitude: longitude));
+            BlocProvider.of<HomeBloc>(context).add(HomeBuscarProblemasEvent(
+                latitude: latitude, longitude: longitude));
           }
 
           if (state is HomeProblemasSuccessState) {
@@ -190,72 +198,111 @@ class _HomePageState extends State<HomePage> {
               final mark = Marker(
                   markerId: MarkerId(problema.nome),
                   position: LatLng(problema.latitude, problema.longitude),
-                  icon: await BitmapDescriptor.fromAssetImage(ImageConfiguration(), "assets/icons/danger.png"),
+                  icon: await BitmapDescriptor.fromAssetImage(
+                      ImageConfiguration(), "assets/icons/danger.png"),
                   onTap: () {
                     showModalBottomSheet(
                         context: context,
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(20)),
+                        ),
                         builder: (_) {
-                          return Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
+                          return Container(
+                              padding: const EdgeInsets.all(16.0),
+                              decoration: BoxDecoration(
+                                color: Colors.green[100],
+                                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                              ),
+                              child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text("${problema.nome}, ${problema.endereco}"),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Text(problema.descricao ?? ''),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
+                                    Text(
+                                      "Problema relatado em ${problema.endereco ?? ''}.",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      problema.descricao ?? '',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey[700],
+                                      ),
+                                    ),
+                                    SizedBox(height: 16),
                                     Row(
                                       children: [
-                                        Text(problema.likes.toString()),
-                                        const SizedBox(width: 10),
-                                        Icon(
-                                          Icons.thumb_up,
-                                          color: Colors.green,
+                                        Row(
+                                          children: [
+                                            Text(problema.likes.toString(),
+                                                style: TextStyle(fontSize: 16)),
+                                            SizedBox(width: 4),
+                                            Icon(Icons.thumb_up,
+                                                color: Colors.green),
+                                          ],
+                                        ),
+                                        SizedBox(width: 16),
+                                        Row(
+                                          children: [
+                                            Text(problema.deslikes.toString(),
+                                                style: TextStyle(fontSize: 16)),
+                                            SizedBox(width: 4),
+                                            Icon(Icons.thumb_down,
+                                                color: Colors.red),
+                                          ],
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(width: 20),
+                                    SizedBox(height: 16),
                                     Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(problema.deslikes.toString()),
-                                        const SizedBox(width: 10),
-                                        Icon(
-                                          Icons.thumb_down,
-                                          color: Colors.red,
+                                        // Displaying the problem image if available
+                                        if (problema.foto != null &&
+                                            problema.foto!.isNotEmpty)
+                                          ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            child: Image.network(
+                                              problema.foto!,
+                                              width: 120,
+                                              height: 120,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        SizedBox(width: 16),
+
+                                        Column(
+                                          children: [
+                                            Icon(Icons.person,
+                                                size: 60, color: Colors.grey),
+                                            SizedBox(height: 4),
+                                            Text(
+                                              problema.nomeDoUsuario ?? "",
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.grey[600]),
+                                            ),
+                                            Align(
+                                              alignment: Alignment.centerRight,
+                                              child: TextButton(
+                                                onPressed: () =>
+                                                    Navigator.pop(context),
+                                                child: Text("Fechar",
+                                                    style: TextStyle(
+                                                        color: Colors.teal)),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    if (problema.foto!.isNotEmpty) Image.network(problema.foto!, width: 250, height: 250),
-                                    Column(
-                                      children: [
-                                        Icon(
-                                          Icons.person,
-                                          size: 100,
-                                        ),
-                                        Text(problema.nomeDoUsuario ?? "Teste"),
-                                      ],
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                          );
+                                  ]));
                         });
                   });
 
@@ -303,18 +350,21 @@ class _HomePageState extends State<HomePage> {
                 onMapCreated: (GoogleMapController controller) async {
                   _mapController = controller;
 
-                  String style = await rootBundle.loadString('assets/config/map-style.json');
+                  String style = await rootBundle
+                      .loadString('assets/config/map-style.json');
                   _mapController!.setMapStyle(style);
                 },
                 zoomControlsEnabled: false,
                 mapType: MapType.normal,
                 markers: markers.toSet(),
                 onTap: (value) async {
-                  if (!_clicouNoCirculo(value, LatLng(latitude, longitude), 70)) {
+                  if (!_clicouNoCirculo(
+                      value, LatLng(latitude, longitude), 70)) {
                     return;
                   }
                   TipoProblemaDto? tipoDeProblemaSelecionado;
-                  final endereco = await retornaLocalizacaoDoUsuario(value.latitude, value.longitude);
+                  final endereco = await retornaLocalizacaoDoUsuario(
+                      value.latitude, value.longitude);
                   String? caminhoDaFoto;
 
                   await showModalBottomSheet(
@@ -343,14 +393,16 @@ class _HomePageState extends State<HomePage> {
                           DropdownButtonFormField<TipoProblemaDto>(
                             value: tipoDeProblemaSelecionado,
                             items: tiposDeProblema
-                                .map((TipoProblemaDto tipoDeProblema) => DropdownMenuItem<TipoProblemaDto>(
+                                .map((TipoProblemaDto tipoDeProblema) =>
+                                    DropdownMenuItem<TipoProblemaDto>(
                                       value: tipoDeProblema,
                                       child: Text(tipoDeProblema.nome),
                                     ))
                                 .toList(),
                             onChanged: (value) {
                               setState(() {
-                                tipoDeProblemaSelecionado = value as TipoProblemaDto;
+                                tipoDeProblemaSelecionado =
+                                    value as TipoProblemaDto;
                               });
                             },
                             decoration: const InputDecoration(
@@ -359,12 +411,14 @@ class _HomePageState extends State<HomePage> {
                           ),
                           const SizedBox(height: 20),
                           TextField(
-                            decoration: const InputDecoration(labelText: "Nome do problema"),
+                            decoration: const InputDecoration(
+                                labelText: "Nome do problema"),
                             controller: _nomeDoProblemaController,
                           ),
                           const SizedBox(height: 20),
                           TextField(
-                            decoration: const InputDecoration(labelText: "Descrição do problema"),
+                            decoration: const InputDecoration(
+                                labelText: "Descrição do problema"),
                             controller: _descricaoDoProblemaController,
                           ),
                           const SizedBox(height: 20),
@@ -406,8 +460,10 @@ class _HomePageState extends State<HomePage> {
                                     HomeCriarProblemaEvent(
                                       problema: ProblemaRequestDto(
                                         nome: _nomeDoProblemaController.text,
-                                        descricao: _descricaoDoProblemaController.text,
-                                        tipoDoProblema: tipoDeProblemaSelecionado!.tipoEnum,
+                                        descricao:
+                                            _descricaoDoProblemaController.text,
+                                        tipoDoProblema:
+                                            tipoDeProblemaSelecionado!.tipoEnum,
                                         localizacao: endereco,
                                         foto: caminhoDaFoto,
                                         latitude: value.latitude,
