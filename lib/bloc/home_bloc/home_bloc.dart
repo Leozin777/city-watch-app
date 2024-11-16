@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../../data/models/dtos/problema_response_dto.dart';
+import '../../data/models/enums/e_tipo_problema.dart';
 import '../../data/models/interface/ihome_service.dart';
 import '../../data/service/NotificationService.dart';
 import '../../helpers/calcula_distancia.dart';
@@ -44,10 +45,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         double latitude = position.latitude;
         double longitude = position.longitude;
 
-        bool problemaProximo = await _verificarTipoProblemaProximo(latitude, longitude);
-        if (problemaProximo) {
+        bool problemaProximoOuArea = await _verificarProblemaProximoOuArea(latitude, longitude);
+        if (problemaProximoOuArea) {
           emit(HomeCloseLoadingState());
-          emit(HomeFailureState(message: "Problema semelhante já cadastrado"));
+          emit(HomeFailureState(message: "Já existe um problema semelhante próximo!"));
           return;
         }
 
@@ -57,7 +58,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         add(HomeAtualizaTela());
       } catch (e) {
         emit(HomeCloseLoadingState());
-        emit(HomeFailureState(message: "Erro ao criar problema"));
+        emit(HomeFailureState(message: "Erro ao criar problema: ${e.toString()}"));
       }
     });
     on<HomeAtualizaTela>((event, emit) async {
@@ -97,6 +98,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         longitude,
         problema.latitude,
         problema.longitude,
+        emMetros: true,
       );
       return distance <= 0.5;
     }).toList();
@@ -119,8 +121,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       ultimaNotificacaoProblema[chaveProblema] = agora;
     }
   }
-
-  Future<bool> _verificarTipoProblemaProximo(double latitude, double longitude) async {
+  Future<bool> _verificarProblemaProximoOuArea(double latitude, double longitude) async {
     final problemas = await _homeService.getProblemas();
     for (var problema in problemas) {
       double distance = CalculaDistancia.calculateDistanceEntreDoisPontos(
@@ -128,8 +129,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         longitude,
         problema.latitude,
         problema.longitude,
+        emMetros: true,
       );
-      if (distance <= 0.2 && !(problema.tipoProblema.value == 3 || problema.tipoProblema.value == 5)) {
+      if (distance <= 15) {
+        print("Problema muito próximo, não pode cadastrar");
         return true;
       }
     }

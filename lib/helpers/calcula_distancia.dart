@@ -1,9 +1,8 @@
 import 'dart:math';
-
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:math' as math;
 
-class CalculaDistancia{
+class CalculaDistancia {
 
   double calculaDistancia(LatLng point1, LatLng point2) {
     const double raioDaTerraEmMetros = 6371000;
@@ -15,9 +14,10 @@ class CalculaDistancia{
     final num c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
     return raioDaTerraEmMetros * c;
   }
-
-  static double calculateDistanceEntreDoisPontos(double lat1, double lon1, double lat2, double lon2) {
-    const double R = 6371;
+  static double calculateDistanceEntreDoisPontos(double lat1, double lon1, double lat2, double lon2, {bool emMetros = false}) {
+    const double R_KM = 6371;
+    const double R_METROS = 6371000;
+    final double R = emMetros ? R_METROS : R_KM;
     final double dLat = _grauParaRadianos(lat2 - lat1);
     final double dLon = _grauParaRadianos(lon2 - lon1);
     final double a = sin(dLat / 2) * sin(dLat / 2) +
@@ -26,8 +26,6 @@ class CalculaDistancia{
     final double c = 2 * atan2(sqrt(a), sqrt(1 - a));
     return R * c;
   }
-
-
   static double _grauParaRadianos(double degrees) {
     return degrees * math.pi / 180;
   }
