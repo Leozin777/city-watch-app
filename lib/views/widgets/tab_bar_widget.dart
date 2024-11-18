@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../bloc/home_bloc/home_bloc.dart';
+import '../pages/problems_page.dart';
 
 class TabBarWidget extends StatefulWidget {
   const TabBarWidget({super.key});
@@ -18,9 +19,7 @@ class _TabBarWidgetState extends State<TabBarWidget> {
       case 0:
         return BlocProvider<HomeBloc>(create: (context) => HomeBloc(), child: HomePage());
       case 1:
-        return Container(
-          color: Colors.green,
-        );
+        return ProblemsScreen();
       case 2:
         return Container(
           color: Colors.blue,
@@ -50,8 +49,8 @@ class _TabBarWidgetState extends State<TabBarWidget> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Pesquisar',
+            icon: Icon(Icons.report_problem),
+            label: 'Meus Problemas',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
