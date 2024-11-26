@@ -1,3 +1,4 @@
+import 'package:city_watch/bloc/problems_bloc/problems_bloc.dart';
 import 'package:city_watch/views/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,7 +20,7 @@ class _TabBarWidgetState extends State<TabBarWidget> {
       case 0:
         return BlocProvider<HomeBloc>(create: (context) => HomeBloc(), child: HomePage());
       case 1:
-        return ProblemsScreen();
+        return BlocProvider<ProblemsBloc>(create: (context) => ProblemsBloc(), child: ProblemsScreen());
       case 2:
         return Container(
           color: Colors.blue,
