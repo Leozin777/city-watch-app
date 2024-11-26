@@ -8,4 +8,8 @@ enum ETipoProblema {
   final int value;
 
   const ETipoProblema(this.value);
+
+  static ETipoProblema fromValue(int value) {
+    return ETipoProblema.values[value - 1];
+  }
 }

@@ -27,7 +27,8 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         return;
       }
       try {
-        final response = await _authService.registerUser(UserRegisterDto(name: event.name, email: event.email, password: event.password));
+        final response =
+            await _authService.registerUser(UserRegisterDto(name: event.name, email: event.email, password: event.password, photo: ''));
         emmit(RegisterCloseLoadingState());
         final responseLogin = await _authService.login(UserLoginDto(email: event.email, password: event.password));
 

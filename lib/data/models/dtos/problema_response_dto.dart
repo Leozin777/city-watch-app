@@ -32,7 +32,7 @@ class ProblemaResponseDto {
       foto: json['photo'],
       latitude: double.parse(json['latitude']),
       longitude: double.parse(json['longitude']),
-      tipoProblema: ETipoProblema.values[json['problemType']],
+      tipoProblema: ETipoProblema.fromValue(int.parse(json['problemType'].toString())),
       likes: json['likes'],
       deslikes: json['deslikes'],
       nomeDoUsuario: json['nomeDoUsuario'],
