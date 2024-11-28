@@ -22,6 +22,7 @@ class AuthenticateService implements IAuthenticateService {
           "name": user.name,
           "email": user.email,
           "password": user.password,
+          "photo": user.photo,
         }),
         headers: {
           'Content-Type': 'application/json',

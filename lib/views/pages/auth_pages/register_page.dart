@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../bloc/auth_bloc/register_bloc/register_bloc.dart';
 import '../../../bloc/auth_bloc/register_bloc/register_event.dart';
 import '../../widgets/loading_widget.dart';
+import '../../widgets/tab_bar_widget.dart';
 import '../../widgets/text_field_widget.dart';
 import '../home_page.dart';
 
@@ -94,7 +95,7 @@ class _RegisterPageState extends State<RegisterPage> {
             );
 
             Future.delayed(const Duration(seconds: 2));
-            Navigator.of(context).pushReplacementNamed(HomePage.route);
+            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => TabBarWidget()));
           }
 
           if (state is RegisterNomeEhObrigatorioState) {
@@ -147,8 +148,8 @@ class _RegisterPageState extends State<RegisterPage> {
                       Text(
                         "Olá, registre-se para começar a usar o app",
                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          color: Colors.white70,
-                        ),
+                              color: Colors.white70,
+                            ),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 30),
@@ -186,21 +187,21 @@ class _RegisterPageState extends State<RegisterPage> {
                         decoration: _inputDecoration("Senha", _senhaError ? "Senha é obrigatório" : null).copyWith(
                           suffixIcon: _obscureText
                               ? IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _obscureText = !_obscureText;
-                              });
-                            },
-                            icon: const Icon(Icons.visibility_off, color: Colors.white),
-                          )
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscureText = !_obscureText;
+                                    });
+                                  },
+                                  icon: const Icon(Icons.visibility_off, color: Colors.white),
+                                )
                               : IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _obscureText = !_obscureText;
-                              });
-                            },
-                            icon: const Icon(Icons.visibility, color: Colors.white),
-                          ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscureText = !_obscureText;
+                                    });
+                                  },
+                                  icon: const Icon(Icons.visibility, color: Colors.white),
+                                ),
                         ),
                         obscureText: _obscureText,
                         style: const TextStyle(color: Colors.white),
