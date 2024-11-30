@@ -1,9 +1,14 @@
+import 'package:city_watch/data/models/interface/ilocal_storage_helper.dart';
+import 'package:city_watch/helpers/staticos.dart';
+import 'package:city_watch/main.dart';
 import 'package:flutter/material.dart';
 import 'auth_pages/login_page.dart';
 import 'auth_pages/register_page.dart';
 
 class IntroductionPage extends StatelessWidget {
-  const IntroductionPage({super.key});
+  IntroductionPage({super.key});
+
+  TextEditingController controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +32,37 @@ class IntroductionPage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset("assets/img/city_watch_logo.png"),
+                GestureDetector(
+                  onDoubleTap: () async {
+                    final endereco = await showDialog(
+                      context: context,
+                      builder: (_) => AlertDialog(
+                        title: const Text("Set endereço da api"),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextField(
+                              controller: controller,
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context, controller.text);
+                              },
+                              child: const Text("Salvar"),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+
+                    if (endereco != null) {
+                      final ILocalStorageHelper localStorageHelper = injecaoDeDepencia<ILocalStorageHelper>();
+                      localStorageHelper.setStringSecureStorage("baseUrl", endereco);
+                      Staticos.baseUrl = endereco;
+                    }
+                  },
+                  child: Image.asset("assets/img/city_watch_logo.png"),
+                ),
                 const SizedBox(height: 20),
                 const Spacer(),
                 Padding(

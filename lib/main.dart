@@ -4,6 +4,7 @@ import 'package:city_watch/data/models/interface/iauthenticate_service.dart';
 import 'package:city_watch/data/models/interface/ihome_service.dart';
 import 'package:city_watch/data/service/home_service.dart';
 import 'package:city_watch/helpers/local_storage_helper.dart';
+import 'package:city_watch/helpers/staticos.dart';
 import 'package:city_watch/views/pages/auth_pages/login_page.dart';
 import 'package:city_watch/views/pages/auth_pages/register_page.dart';
 import 'package:city_watch/views/pages/home_page.dart';
@@ -28,9 +29,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterConfig.loadEnvVariables();
   final bool isAuthenticated = await loginValidation();
+  final bool apiConfigurada = await verificarConfiguracaoApi();
 
   runApp(MyApp(
     isAutheticated: isAuthenticated,
+    apiConfigurada: apiConfigurada,
   ));
 }
 
@@ -49,10 +52,21 @@ Future<bool> loginValidation() async {
   return await authenticateService.isAutheticated();
 }
 
+Future<bool> verificarConfiguracaoApi() async {
+  final ILocalStorageHelper localStorageHelper = injecaoDeDepencia<ILocalStorageHelper>();
+  final String? baseUrl = await localStorageHelper.getStringSecureStorage("baseUrl");
+  if (baseUrl == null) {
+    return false;
+  }
+  Staticos.baseUrl = baseUrl;
+  return true;
+}
+
 class MyApp extends StatelessWidget {
   final bool isAutheticated;
+  final bool apiConfigurada;
 
-  const MyApp({super.key, required this.isAutheticated});
+  const MyApp({super.key, required this.isAutheticated, required this.apiConfigurada});
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +86,7 @@ class MyApp extends StatelessWidget {
               child: const RegisterPage(),
             ),
       },
-      home: isAutheticated ? TabBarWidget() : const IntroductionPage(),
+      home: isAutheticated ? TabBarWidget() : IntroductionPage(),
     );
   }
 }

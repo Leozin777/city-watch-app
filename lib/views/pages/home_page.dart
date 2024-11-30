@@ -101,18 +101,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  inicializandoCamera() async {
-    final cameras = await availableCameras();
-    final cameraTraseira = cameras[1];
-
-    _cameraController = CameraController(cameraTraseira, ResolutionPreset.medium);
-    _cameraController.initialize().then((_) {
-      if (!mounted) {
-        return;
-      }
-    });
-  }
-
   limpaControllers() {
     _nomeDoProblemaController.clear();
     _descricaoDoProblemaController.clear();

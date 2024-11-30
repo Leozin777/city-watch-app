@@ -41,7 +41,11 @@ class _TirarFotoWidgetState extends State<TirarFotoWidget> {
               onPressed: () async {
                 final XFile? image = await picker.pickImage(source: ImageSource.gallery);
                 if (image != null) {
-                  Navigator.of(context).pop(image.readAsBytes());
+                  final bytes = await image.readAsBytes();
+                  final resizedImage = img.copyResize(img.decodeImage(bytes)!, width: 500);
+                  final encodedImage = img.encodeJpg(resizedImage, quality: 50);
+                  final base64String = base64Encode(encodedImage);
+                  Navigator.of(context).pop(base64String);
                 }
               },
             ),

@@ -8,6 +8,7 @@ import 'package:city_watch/main.dart';
 import 'package:http/http.dart' as http;
 
 import '../../base_url_constante.dart';
+import '../../helpers/staticos.dart';
 import '../../utils/constants.dart';
 
 class AuthenticateService implements IAuthenticateService {
@@ -17,7 +18,7 @@ class AuthenticateService implements IAuthenticateService {
   Future<String> registerUser(UserRegisterDto user) async {
     try {
       final response = await http.post(
-        Uri.parse("$baseUrl/auth/register"),
+        Uri.parse("${Staticos.baseUrl}/auth/register"),
         body: json.encode({
           "name": user.name,
           "email": user.email,
@@ -54,7 +55,7 @@ class AuthenticateService implements IAuthenticateService {
   @override
   Future<bool> login(UserLoginDto user) async {
     try {
-      final response = await http.post(Uri.parse("$baseUrl/auth/login"),
+      final response = await http.post(Uri.parse("${Staticos.baseUrl}/auth/login"),
           body: json.encode({
             "email": user.email,
             "password": user.password,
