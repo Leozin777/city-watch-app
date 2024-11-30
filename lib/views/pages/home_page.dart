@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:camera/camera.dart';
 import 'package:city_watch/data/models/dtos/problema_request_dto.dart';
@@ -18,6 +19,7 @@ import '../../bloc/home_bloc/home_event.dart';
 import '../../bloc/home_bloc/home_state.dart';
 import '../../data/models/tipo_problema_dto.dart';
 import '../widgets/bottom_sheet_generico.dart';
+import '../widgets/tirar_foto_widget.dart';
 
 class HomePage extends StatefulWidget {
   static String route = '/home';
@@ -118,13 +120,10 @@ class _HomePageState extends State<HomePage> {
 
   Future<String?> tirarFoto() async {
     try {
-      await inicializandoCamera();
-      final foto = await _cameraController.takePicture();
-
-      if (!mounted) return null;
-
-      _cameraController.dispose();
-      return foto.path;
+      final foto = await showDialog(context: context, builder: (_) => const TirarFotoWidget());
+      if (foto != null) {
+        return foto;
+      }
     } on Exception {
       return null;
     }
@@ -153,14 +152,6 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       body: BlocListener<HomeBloc, HomeState>(
         listener: (context, state) {
-          if (state is HomeOpenLoadingState) {
-            showDialog(context: context, builder: (_) => const LoadingWidget());
-          }
-
-          if (state is HomeCloseLoadingState) {
-            PopupHelper.fecharPopup(context);
-          }
-
           if (state is HomeLocalizacaoDoUsuarioSuccessState) {
             setState(() {
               latitude = state.latitude;
@@ -213,35 +204,11 @@ class _HomePageState extends State<HomePage> {
                                   ],
                                 ),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(problema.likes.toString()),
-                                        const SizedBox(width: 10),
-                                        Icon(
-                                          Icons.thumb_up,
-                                          color: Colors.green,
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(width: 20),
-                                    Row(
-                                      children: [
-                                        Text(problema.deslikes.toString()),
-                                        const SizedBox(width: 10),
-                                        Icon(
-                                          Icons.thumb_down,
-                                          color: Colors.red,
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    if (problema.foto!.isNotEmpty) Image.network(problema.foto!, width: 250, height: 250),
+                                    problema.foto!.isNotEmpty
+                                        ? Image.memory(base64Decode(problema.foto!), width: 250, height: 250)
+                                        : SizedBox(width: 250, height: 250),
                                     Column(
                                       children: [
                                         Icon(

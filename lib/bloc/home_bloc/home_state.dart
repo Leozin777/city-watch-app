@@ -4,10 +4,6 @@ abstract class HomeState {}
 
 class HomeInitialState extends HomeState {}
 
-class HomeOpenLoadingState extends HomeState {}
-
-class HomeCloseLoadingState extends HomeState {}
-
 class HomeFailureState extends HomeState {
   String message;
 

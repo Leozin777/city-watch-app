@@ -11,27 +11,35 @@ import '../../base_url_constante.dart';
 class HomeService extends BaseService implements IHomeService {
   @override
   Future<List<ProblemaResponseDto>> getProblemas() async {
-    final response = await makeRequest(url: "$baseUrl/problem", method: EHttpMethod.get);
+    try {
+      final response = await makeRequest(url: "$baseUrl/problem", method: EHttpMethod.get);
 
-    final data = jsonDecode(response!.body);
-    final listaDeProblemasJson = data['data'] as List;
+      final data = jsonDecode(response!.body);
+      final listaDeProblemasJson = data['data'] as List;
 
-    if (listaDeProblemasJson.isEmpty) return [];
+      if (listaDeProblemasJson.isEmpty) return [];
 
-    final List<ProblemaResponseDto> listaDeProblemas =
-        listaDeProblemasJson.map((problema) => ProblemaResponseDto.fromJson(problema)).toList();
+      final List<ProblemaResponseDto> listaDeProblemas =
+          listaDeProblemasJson.map((problema) => ProblemaResponseDto.fromJson(problema)).toList();
 
-    return listaDeProblemas;
+      return listaDeProblemas;
+    } on Exception catch (e) {
+      rethrow;
+    }
   }
 
   @override
   criarProblema(ProblemaRequestDto problema) async {
-    final response = await makeRequest(
-      url: "$baseUrl/problem",
-      method: EHttpMethod.post,
-      parameters: problema.toJson(),
-    );
+    try {
+      final response = await makeRequest(
+        url: "$baseUrl/problem",
+        method: EHttpMethod.post,
+        parameters: problema.toJson(),
+      );
 
-    return response;
+      return response;
+    } on Exception catch (e) {
+      rethrow;
+    }
   }
 }

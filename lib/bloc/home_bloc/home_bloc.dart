@@ -38,38 +38,29 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(HomeLocalizacaoDoUsuarioSuccessState(latitude: position.latitude, longitude: position.longitude));
     });
     on<HomeCriarProblemaEvent>((event, emit) async {
-      emit(HomeOpenLoadingState());
       try {
         await _homeService.criarProblema(event.problema);
-        emit(HomeCloseLoadingState());
         emit(HomeCriarProblemaSuccessState());
         add(HomeAtualizaTela());
       } catch (e) {
-        emit(HomeCloseLoadingState());
         emit(HomeFailureState(message: "Erro ao criar problema"));
       }
     });
     on<HomeAtualizaTela>((event, emit) async {
-      emit(HomeOpenLoadingState());
       try {
         final problemas = await _homeService.getProblemas();
-        emit(HomeCloseLoadingState());
         emit(HomeProblemasSuccessState(problemas: problemas));
       } catch (e) {
-        emit(HomeCloseLoadingState());
         emit(HomeFailureState(message: "Erro ao buscar problemas"));
       }
     });
     on<HomeBuscarProblemasEvent>((event, emit) async {
-      emit(HomeOpenLoadingState());
       try {
         final problemas = await _homeService.getProblemas();
-        emit(HomeCloseLoadingState());
         emit(HomeProblemasSuccessState(problemas: problemas));
 
         await _verificarProblemasProximos();
       } catch (e) {
-        emit(HomeCloseLoadingState());
         emit(HomeFailureState(message: "Erro ao buscar problemas"));
       }
     });
