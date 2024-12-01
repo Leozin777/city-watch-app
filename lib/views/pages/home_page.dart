@@ -189,23 +189,9 @@ class _HomePageState extends State<HomePage> {
                                     Text(problema.descricao ?? ''),
                                   ],
                                 ),
-                                // Row(
-                                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                //   children: [
-                                //     problema.foto!.isNotEmpty
-                                //         ? Image.memory(base64Decode(problema.foto!), width: 250, height: 250)
-                                //         : SizedBox(width: 250, height: 250),
-                                //     Column(
-                                //       children: [
-                                //         Icon(
-                                //           Icons.person,
-                                //           size: 100,
-                                //         ),
-                                //         Text(problema.nomeDoUsuario ?? "Teste"),
-                                //       ],
-                                //     )
-                                //   ],
-                                // )
+                                problema.foto!.isNotEmpty
+                                    ? Image.memory(base64Decode(problema.foto!), width: 250, height: 250)
+                                    : SizedBox(width: 250, height: 250),
                               ],
                             ),
                           );
