@@ -17,4 +17,10 @@ class HomeCriarProblemaEvent extends HomeEvent {
   HomeCriarProblemaEvent({required this.problema});
 }
 
-class HomeAtualizaTela extends HomeEvent{}
+class HomeAtualizaTela extends HomeEvent {}
+
+class HomeBuscarDatalhesDoProblema extends HomeEvent {
+  final String idProblema;
+
+  HomeBuscarDatalhesDoProblema({required this.idProblema});
+}

@@ -89,7 +89,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       if (ultimaNotificacaoProblema.containsKey(chaveProblema)) {
         DateTime ultimaNotificacao = ultimaNotificacaoProblema[chaveProblema]!;
         Duration diferenca = agora.difference(ultimaNotificacao);
-        if (diferenca.inMinutes < 1) {
+        if (diferenca.inMinutes < 5) {
           continue;
         }
       }

@@ -1,5 +1,7 @@
 import 'package:city_watch/bloc/problems_bloc/problems_bloc.dart';
+import 'package:city_watch/bloc/profile_bloc/profile_bloc.dart';
 import 'package:city_watch/views/pages/home_page.dart';
+import 'package:city_watch/views/pages/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -15,6 +17,7 @@ class TabBarWidget extends StatefulWidget {
 
 class _TabBarWidgetState extends State<TabBarWidget> {
   int currentIndex = 0;
+
   Widget _paginaSelecionada() {
     switch (currentIndex) {
       case 0:
@@ -22,9 +25,7 @@ class _TabBarWidgetState extends State<TabBarWidget> {
       case 1:
         return BlocProvider<ProblemsBloc>(create: (context) => ProblemsBloc(), child: ProblemsScreen());
       case 2:
-        return Container(
-          color: Colors.blue,
-        );
+        return BlocProvider<ProfileBloc>(create: (context) => ProfileBloc(), child: ProfilePage());
       default:
         return Container(
           color: Colors.red,

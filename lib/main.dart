@@ -2,7 +2,9 @@ import 'package:city_watch/bloc/auth_bloc/login_bloc/login_bloc.dart';
 import 'package:city_watch/bloc/home_bloc/home_bloc.dart';
 import 'package:city_watch/data/models/interface/iauthenticate_service.dart';
 import 'package:city_watch/data/models/interface/ihome_service.dart';
+import 'package:city_watch/data/models/interface/iprofile_service.dart';
 import 'package:city_watch/data/service/home_service.dart';
+import 'package:city_watch/data/service/profile_service.dart';
 import 'package:city_watch/helpers/local_storage_helper.dart';
 import 'package:city_watch/helpers/staticos.dart';
 import 'package:city_watch/views/pages/auth_pages/login_page.dart';
@@ -45,6 +47,7 @@ setupInjecaoDeDependencia() {
   injecaoDeDepencia.registerSingleton<IHomeService>(HomeService());
   injecaoDeDepencia.registerSingleton<NotificationService>(NotificationService());
   injecaoDeDepencia.registerSingleton<IProblemaService>(ProblemaService());
+  injecaoDeDepencia.registerSingleton<IProfileService>(ProfileService());
 }
 
 Future<bool> loginValidation() async {

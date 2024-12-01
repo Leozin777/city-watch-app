@@ -50,13 +50,22 @@ class BaseService {
 
       case EHttpMethod.put:
         try {
-          return await _autheticatedHttp.put(Uri.parse(url), body: parameters, headers: {'Content-Type': 'application/json'});
+          final response =
+          await _autheticatedHttp.patch(Uri.parse(url), body: json.encode(parameters), headers: {'Content-Type': 'application/json'});
+
+          final result = trataResponseApi(response);
+
+          if (!result) {
+            return response;
+          } else {
+            return null;
+          }
         } catch (e) {
           rethrow;
         }
       case EHttpMethod.delete:
         try {
-          return await _autheticatedHttp.put(Uri.parse(url), body: parameters, headers: {'Content-Type': 'application/json'});
+          return await _autheticatedHttp.delete(Uri.parse(url), body: parameters, headers: {'Content-Type': 'application/json'});
         } catch (e) {
           rethrow;
         }

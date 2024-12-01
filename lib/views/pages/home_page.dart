@@ -6,7 +6,6 @@ import 'package:city_watch/data/models/dtos/problema_request_dto.dart';
 import 'package:city_watch/data/models/enums/e_tipo_problema.dart';
 import 'package:city_watch/helpers/calcula_distancia.dart';
 import 'package:city_watch/helpers/popup_helper.dart';
-import 'package:city_watch/views/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -39,7 +38,6 @@ class _HomePageState extends State<HomePage> {
   double latitude = 0;
   double longitude = 0;
   List<Marker> markers = [];
-  late CameraController _cameraController;
   late TextEditingController _nomeDoProblemaController;
   late TextEditingController _descricaoDoProblemaController;
   Set<Circle> _rangeDoUsuario = {};
@@ -191,23 +189,23 @@ class _HomePageState extends State<HomePage> {
                                     Text(problema.descricao ?? ''),
                                   ],
                                 ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    problema.foto!.isNotEmpty
-                                        ? Image.memory(base64Decode(problema.foto!), width: 250, height: 250)
-                                        : SizedBox(width: 250, height: 250),
-                                    Column(
-                                      children: [
-                                        Icon(
-                                          Icons.person,
-                                          size: 100,
-                                        ),
-                                        Text(problema.nomeDoUsuario ?? "Teste"),
-                                      ],
-                                    )
-                                  ],
-                                )
+                                // Row(
+                                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                //   children: [
+                                //     problema.foto!.isNotEmpty
+                                //         ? Image.memory(base64Decode(problema.foto!), width: 250, height: 250)
+                                //         : SizedBox(width: 250, height: 250),
+                                //     Column(
+                                //       children: [
+                                //         Icon(
+                                //           Icons.person,
+                                //           size: 100,
+                                //         ),
+                                //         Text(problema.nomeDoUsuario ?? "Teste"),
+                                //       ],
+                                //     )
+                                //   ],
+                                // )
                               ],
                             ),
                           );
