@@ -1,3 +1,4 @@
+import '../../data/models/dtos/problem_details_dto.dart';
 import '../../data/models/dtos/problema_response_dto.dart';
 
 abstract class HomeState {}
@@ -28,3 +29,9 @@ class HomeProblemasSuccessState extends HomeState {
 }
 
 class HomeCriarProblemaSuccessState extends HomeState {}
+
+class HomeDetalhesDoProblemaSuccessState extends HomeState {
+  ProblemDetailsDto problema;
+
+  HomeDetalhesDoProblemaSuccessState({required this.problema});
+}

@@ -5,9 +5,8 @@ import 'package:city_watch/data/models/dtos/problema_response_dto.dart';
 import 'package:city_watch/data/models/enums/e_http_method.dart';
 import 'package:city_watch/data/models/interface/ihome_service.dart';
 import 'package:city_watch/data/service/base_service.dart';
-
-import '../../base_url_constante.dart';
 import '../../helpers/staticos.dart';
+import '../models/dtos/problem_details_dto.dart';
 
 class HomeService extends BaseService implements IHomeService {
   @override
@@ -40,6 +39,18 @@ class HomeService extends BaseService implements IHomeService {
 
       return response;
     } on Exception catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<ProblemDetailsDto> buscarDetalhesDoProblema(String idProblema) async {
+    try {
+      final response = await makeRequest(url: "${Staticos.baseUrl}/problem/$idProblema/detail", method: EHttpMethod.get);
+      final data = jsonDecode(response!.body);
+      final problema = ProblemDetailsDto.fromJson(data);
+      return problema;
+    } catch (e) {
       rethrow;
     }
   }

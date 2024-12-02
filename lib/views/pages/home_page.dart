@@ -169,33 +169,7 @@ class _HomePageState extends State<HomePage> {
                   position: LatLng(problema.latitude, problema.longitude),
                   icon: await BitmapDescriptor.fromAssetImage(ImageConfiguration(), "assets/icons/danger.png"),
                   onTap: () {
-                    showModalBottomSheet(
-                        context: context,
-                        builder: (_) {
-                          return Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Text("${problema.nome}, ${problema.endereco}"),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Text(problema.descricao ?? ''),
-                                  ],
-                                ),
-                                problema.foto!.isNotEmpty
-                                    ? Image.memory(base64Decode(problema.foto!), width: 250, height: 250)
-                                    : SizedBox(width: 250, height: 250),
-                              ],
-                            ),
-                          );
-                        });
+                    BlocProvider.of<HomeBloc>(context).add(HomeBuscarDatalhesDoProblema(idProblema: problema.id));
                   });
 
               setState(() {
@@ -229,6 +203,55 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             );
+          }
+
+          if (state is HomeDetalhesDoProblemaSuccessState) {
+            showModalBottomSheet(
+                context: context,
+                builder: (_) {
+                  return Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text("${state.problema.nome}, ${state.problema.endereco}"),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(state.problema.descricao ?? ''),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            state.problema.foto!.isNotEmpty
+                                ? Image.memory(base64Decode(state.problema.foto!), width: 200, height: 200)
+                                : SizedBox(width: 0, height: 0),
+                            Column(
+                              children: [
+                                state.problema.userProblem?.photo != null && state.problema.userProblem!.photo!.isNotEmpty
+                                    ? CircleAvatar(
+                                        radius: 50,
+                                        backgroundImage: MemoryImage(base64Decode(state.problema.userProblem!.photo!), scale: 20),
+                                      )
+                                    : Icon(
+                                        Icons.person,
+                                        size: 80,
+                                      ),
+                                Text(state.problema.userProblem?.nome ?? "Teste"),
+                              ],
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  );
+                });
           }
         },
         child: BlocBuilder<HomeBloc, HomeState>(

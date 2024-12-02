@@ -64,6 +64,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         emit(HomeFailureState(message: "Erro ao buscar problemas"));
       }
     });
+
+    on<HomeBuscarDatalhesDoProblema>((event, emit) async {
+      try {
+        final problema = await _homeService.buscarDetalhesDoProblema(event.idProblema);
+        emit(HomeDetalhesDoProblemaSuccessState(problema: problema));
+      } on Exception catch (e) {
+        emit(HomeFailureState(message: "Erro ao buscar detalhes do problema"));
+      }
+    });
   }
 
   Future<void> _verificarProblemasProximos() async {
